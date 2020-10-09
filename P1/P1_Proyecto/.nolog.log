@@ -1,0 +1,112 @@
+{"date":"02/10/2020_10:42:50","record":{"agent":"MYNIF","info":"Hello World!"}}
+{"date":"02/10/2020_10:45:07","record":{"agent":"09079064K","info":"Hello World!"}}
+{"date":"02/10/2020_10:46:47","record":{"agent":"09079064K","info":"Hello World!"}}
+{"date":"02/10/2020_10:48:16","record":{"agent":"09079064K","info":"Hello World!"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"Found  PLAY Mutenroshi"}}
+{"date":"02/10/2020_10:49:11","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Mutenroshi>"}}
+{"date":"02/10/2020_10:49:12","record":{"agent":"09079064K","info":"LARVA Agent Mutenroshi found. Requesting registration"}}
+{"date":"02/10/2020_10:49:13","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_10:49:13","record":{"agent":"09079064K","info":"Hello World!"}}
+{"date":"02/10/2020_10:49:13","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_10:49:18","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_10:49:19","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_10:49:23","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_10:49:23","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"02/10/2020_10:52:25","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_10:52:25","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_10:52:25","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"Found  PLAY Goku"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Goku>"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"LARVA Agent Goku found. Requesting registration"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"Hello World!"}}
+{"date":"02/10/2020_10:52:26","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_10:52:31","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_10:52:31","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_10:52:35","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_10:52:35","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"Found  PLAY Goku"}}
+{"date":"02/10/2020_10:56:39","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Goku>"}}
+{"date":"02/10/2020_10:56:40","record":{"agent":"09079064K","info":"LARVA Agent Goku found. Requesting registration"}}
+{"date":"02/10/2020_10:56:40","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_10:56:40","record":{"agent":"09079064K","info":"Hablando con Goku"}}
+{"date":"02/10/2020_10:56:40","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_10:56:45","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_10:56:45","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_10:56:49","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_10:56:49","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"02/10/2020_10:59:04","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_10:59:04","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_10:59:04","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"Found  PLAY Goku"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Goku>"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"LARVA Agent Goku found. Requesting registration"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"Hablando con Goku"}}
+{"date":"02/10/2020_10:59:05","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_10:59:10","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_10:59:10","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_10:59:14","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_10:59:14","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"02/10/2020_11:00:29","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_11:00:29","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_11:00:29","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"Found  PLAY Songoanda"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Songoanda>"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"LARVA Agent Songoanda found. Requesting registration"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"Hablando con Goku"}}
+{"date":"02/10/2020_11:00:30","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_11:00:35","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_11:00:35","record":{"agent":"09079064K","info":"Unexpected message received (INFORM\n :sender  ( agent-identifier :name Songoanda@ISG2  :addresses (sequence http://localhost:7778/acc ))\n :receiver  (set ( agent-identifier :name \"09079064K@ISG2\"  :addresses (sequence http://localhost:7778/acc )) )\n :content  \"T4KVeR7D\" \n :reply-with  T4KVeR7D  :protocol  REGULAR\n)"}}
+{"date":"02/10/2020_11:00:35","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_11:00:37","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_11:00:37","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"Found  PLAY Songoanda"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Songoanda>"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"LARVA Agent Songoanda found. Requesting registration"}}
+{"date":"02/10/2020_11:05:11","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_11:05:12","record":{"agent":"09079064K","info":"Hablando con Songoanda"}}
+{"date":"02/10/2020_11:05:12","record":{"agent":"09079064K","info":"Songoanda dice: kuED94pz"}}
+{"date":"02/10/2020_11:05:12","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_11:05:17","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_11:05:17","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_11:05:21","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_11:05:21","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"\nHACKATHON AND EXAM PROTOCOL\n"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"Found  PLAY Songoanda"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY Songoanda>"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"LARVA Agent Songoanda found. Requesting registration"}}
+{"date":"02/10/2020_11:07:23","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"02/10/2020_11:07:24","record":{"agent":"09079064K","info":"Hablando con Songoanda"}}
+{"date":"02/10/2020_11:07:24","record":{"agent":"09079064K","info":"Songoanda dice: rfzm5CQc"}}
+{"date":"02/10/2020_11:07:24","record":{"agent":"09079064K","info":"Waiting 5000 msecs for the agent to die "}}
+{"date":"02/10/2020_11:07:29","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"02/10/2020_11:07:29","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"02/10/2020_11:07:33","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"02/10/2020_11:07:33","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
