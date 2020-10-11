@@ -63,7 +63,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 
             break;
             case "doAction":
-                status = "logout";
+                doAction();
             break;
             case "logout":
                 logout();
@@ -89,7 +89,17 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return loginInfo;
     }
     
-    public JsonObject getLogout (String key){
+    public JsonObject getActions (String action){
+        JsonObject actions = new JsonObject();
+        
+        actions.add("command","execute");
+        actions.add("key",key);
+        actions.add("action", action);
+        
+        return actions;
+    }
+    
+    public JsonObject getLogout (){
         JsonObject logoutInfo = new JsonObject();
         
         logoutInfo.add("command","logout");
@@ -120,11 +130,35 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     }
     
     public void logout(){
-        JsonObject logoutInfo = getLogout(key);
+        JsonObject logoutInfo = getLogout();
         ACLMessage logout = new ACLMessage();
         logout.setSender(getAID());
         logout.addReceiver(new AID(receiver, AID.ISLOCALNAME));
         logout.setContent(logoutInfo.toString());
         this.sendServer(logout);
+    }
+    
+    public void doAction(){
+        JsonObject actions = getActions("rotateL");
+        ACLMessage demoAction = new ACLMessage();
+        demoAction.setSender(getAID());
+        demoAction.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        demoAction.setContent(actions.toString());
+        this.sendServer(demoAction);
+
+        ACLMessage getAction = this.blockingReceive();
+        String action = getAction.getContent();
+
+        JsonObject parsedAction;
+        parsedAction = Json.parse(action).asObject();
+
+        if (parsedAction.get("result").asString().equals("ok")){
+            Info("Acción realizada con éxito");
+        }
+        else{
+            Info("La acción no pudo ser realizada");
+        }
+
+        status = "logout";
     }
 }
