@@ -10,10 +10,10 @@ import AppBoot.ConsoleBoot;
 public class P1_DBA {
 
     public static void main(String[] args) {
-        ConsoleBoot app = new ConsoleBoot("HACKATHON", args);
+        ConsoleBoot app = new ConsoleBoot("P1", args);
         app.selectConnection();
         
-        app.launchAgent("09079064K", MyHackathon.class);
+        app.launchAgent("09079064K", CieAutomotiveDrone.class);
         app.shutDown();        
     }
     
