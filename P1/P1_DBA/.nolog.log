@@ -110,3 +110,34 @@
 {"date":"02/10/2020_11:07:29","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
 {"date":"02/10/2020_11:07:33","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
 {"date":"02/10/2020_11:07:33","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"11/10/2020_18:14:11","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"11/10/2020_18:14:11","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"11/10/2020_18:14:13","record":{"agent":"09079064K","info":"Agent AgentIdentityManager does not answer"}}
+{"date":"11/10/2020_18:14:13","record":{"agent":"09079064K","info":"Waiting to delete container"}}
+{"date":"11/10/2020_18:14:19","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"11/10/2020_18:14:19","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
+{"date":"11/10/2020_18:27:32","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"11/10/2020_18:27:32","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"11/10/2020_18:27:34","record":{"agent":"09079064K","info":"Agent AgentIdentityManager does not answer"}}
+{"date":"11/10/2020_18:27:34","record":{"agent":"09079064K","info":"Waiting to delete container"}}
+{"date":"11/10/2020_18:27:39","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"11/10/2020_18:27:39","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
+{"date":"11/10/2020_18:27:39","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY BasePlayground>"}}
+{"date":"11/10/2020_18:28:04","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"11/10/2020_18:28:04","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"11/10/2020_18:28:06","record":{"agent":"09079064K","info":"Agent AgentIdentityManager does not answer"}}
+{"date":"11/10/2020_18:28:06","record":{"agent":"09079064K","info":"Waiting to delete container"}}
+{"date":"11/10/2020_18:28:11","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"11/10/2020_18:28:11","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
+{"date":"11/10/2020_19:18:56","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"11/10/2020_19:18:56","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"11/10/2020_19:18:58","record":{"agent":"09079064K","info":"Agent AgentIdentityManager does not answer"}}
+{"date":"11/10/2020_19:18:58","record":{"agent":"09079064K","info":"Waiting to delete container"}}
+{"date":"11/10/2020_19:19:04","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"11/10/2020_19:19:04","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
+{"date":"11/10/2020_19:28:08","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"11/10/2020_19:28:08","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"11/10/2020_19:28:10","record":{"agent":"09079064K","info":"Agent AgentIdentityManager does not answer"}}
+{"date":"11/10/2020_19:28:10","record":{"agent":"09079064K","info":"Waiting to delete container"}}
+{"date":"11/10/2020_19:28:16","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"11/10/2020_19:28:16","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
