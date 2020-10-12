@@ -12,6 +12,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     String receiver;
     private String status;
     private String key;
+    private ArrayList<String> sensorList;
+    private String worldName;
 
     @Override
     public void setup() {
@@ -20,6 +22,17 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         doCheckinPlatform();
         doCheckinLARVA();
         receiver = this.whoLarvaAgent();
+        sensorList = new ArrayList();
+        worldName = "BasePlayground";
+        
+        sensorList.add("alive");
+        sensorList.add("angular");
+        sensorList.add("compass");
+        sensorList.add("distance");
+        sensorList.add("energy");
+        sensorList.add("gps");
+        sensorList.add("visual");
+        _exitRequested = false;
     }
 
     @Override
@@ -32,34 +45,9 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     
     @Override
     public void plainExecute() {
-        /*Info("Realizando P1");
-        ACLMessage out = new ACLMessage();
-        out.setSender(getAID());
-        out.addReceiver(new AID("Songoanda", AID.ISLOCALNAME));
-        out.setContent("Hello");
-        this.sendServer(out);
-        ACLMessage in = this.blockingReceive();
-        String answer = in.getContent();
-        Info("Songoanda dice: "+answer);
-        String reply = new StringBuilder(answer).reverse().toString();
-        out = in.createReply();
-        out.setContent(reply);
-        this.sendServer(out);
-        _exitRequested = true;*/
-        ArrayList<String> sensorList = new ArrayList();
-        String worldName = "BasePlayground";
-        
-        sensorList.add("alive");
-        sensorList.add("angular");
-        sensorList.add("compass");
-        sensorList.add("distance");
-        sensorList.add("energy");
-        sensorList.add("gps");
-        sensorList.add("visual");
-        
         switch(status){
             case "login":
-                login(sensorList, worldName);
+                login();
                 
             break;
             case "doAction":
@@ -68,81 +56,35 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             case "logout":
                 logout();
             break;
+            case "exit":
+                _exitRequested = true;
+            break;
         }
-            
-        _exitRequested = true;
-        
-    }
-    
-    public JsonObject getDeploymentMessage (ArrayList<String> sensorList, String worldName){
-        JsonObject loginInfo = new JsonObject();
-        JsonArray sensors = new JsonArray();
-        
-        for (String s : sensorList){
-            sensors.add(s);
-        }
-        
-        loginInfo.add("command","login");
-        loginInfo.add("world",worldName);
-        loginInfo.add("attach",sensors);
-        
-        return loginInfo;
-    }
-    
-    public JsonObject getActions (String action){
-        JsonObject actions = new JsonObject();
-        
-        actions.add("command","execute");
-        actions.add("key",key);
-        actions.add("action", action);
-        
-        return actions;
-    }
-    
-    public JsonObject getLogout (){
-        JsonObject logoutInfo = new JsonObject();
-        
-        logoutInfo.add("command","logout");
-        logoutInfo.add("key",key);
-        
-        return logoutInfo;
-    }
-    
-    public void login(ArrayList<String> sensorList, String worldName){
-        JsonObject loginInfo = getDeploymentMessage(sensorList, worldName);
-        
-        ACLMessage sendLogin = new ACLMessage();
-        sendLogin.setSender(getAID());
-        sendLogin.addReceiver(new AID(receiver, AID.ISLOCALNAME));
-        sendLogin.setContent(loginInfo.toString());
-        this.sendServer(sendLogin);
-        
-        ACLMessage getLogin = this.blockingReceive();
-        String login = getLogin.getContent();
-       
-        JsonObject parsedLogin;
-        parsedLogin = Json.parse(login).asObject();
-        
-        if (parsedLogin.get("result").asString().equals("ok")){
-            status = "doAction";
-            key = parsedLogin.get("key").asString();
-        }
-    }
-    
-    public void logout(){
-        JsonObject logoutInfo = getLogout();
-        ACLMessage logout = new ACLMessage();
-        logout.setSender(getAID());
-        logout.addReceiver(new AID(receiver, AID.ISLOCALNAME));
-        logout.setContent(logoutInfo.toString());
-        this.sendServer(logout);
-    }
+    } 
     
     public void doAction(){
+        JsonObject sensorsRequest = getSensors();
+        ACLMessage sensorsMessage = new ACLMessage();
+        sensorsMessage.setSender(getAID());
+        sensorsMessage.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        sensorsMessage.setContent(sensorsRequest.toString());
+        this.sendServer(sensorsMessage);
+        
+        ACLMessage getSensors = this.blockingReceive();
+        String sensors = getSensors.getContent();
+        
+        JsonObject parsedSensors;
+        parsedSensors = Json.parse(sensors).asObject();
+        
+        if (parsedSensors.get("result").asString().equals("ok")){
+            Info(sensors);
+        }
+        else{
+            status = "exit";
+        }
+        
         JsonObject actions = getActions("rotateL");
-        ACLMessage demoAction = new ACLMessage();
-        demoAction.setSender(getAID());
-        demoAction.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        ACLMessage demoAction = getSensors.createReply();
         demoAction.setContent(actions.toString());
         this.sendServer(demoAction);
 
@@ -160,5 +102,83 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
 
         status = "logout";
+    }
+    
+    public JsonObject getActions (String action){
+        JsonObject actions = new JsonObject();
+        
+        actions.add("command","execute");
+        actions.add("key",key);
+        actions.add("action", action);
+        
+        return actions;
+    }
+    
+    public JsonObject getDeploymentMessage (){
+        JsonObject loginInfo = new JsonObject();
+        JsonArray sensors = new JsonArray();
+        
+        for (String s : sensorList){
+            sensors.add(s);
+        }
+        
+        loginInfo.add("command","login");
+        loginInfo.add("world",worldName);
+        loginInfo.add("attach",sensors);
+        
+        return loginInfo;
+    } 
+    
+    public JsonObject getLogout (){
+        JsonObject logoutInfo = new JsonObject();
+        
+        logoutInfo.add("command","logout");
+        logoutInfo.add("key",key);
+        
+        return logoutInfo;
+    }
+    
+    public JsonObject getSensors (){
+        JsonObject sensorsInfo = new JsonObject();
+        
+        sensorsInfo.add("command","read");
+        sensorsInfo.add("key",key);
+        
+        return sensorsInfo;
+    }
+    
+    public void login(){
+        JsonObject loginInfo = getDeploymentMessage();
+        
+        ACLMessage sendLogin = new ACLMessage();
+        sendLogin.setSender(getAID());
+        sendLogin.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        sendLogin.setContent(loginInfo.toString());
+        this.sendServer(sendLogin);
+        
+        ACLMessage getLogin = this.blockingReceive();
+        String login = getLogin.getContent();
+       
+        // Esperando respuesta
+        JsonObject parsedLogin;
+        parsedLogin = Json.parse(login).asObject();
+        
+        if (parsedLogin.get("result").asString().equals("ok")){
+            status = "doAction";
+            key = parsedLogin.get("key").asString();
+        }
+        else{
+            status = "exit";
+        }
+    }
+    
+    public void logout(){
+        JsonObject logoutInfo = getLogout();
+        ACLMessage logout = new ACLMessage();
+        logout.setSender(getAID());
+        logout.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        logout.setContent(logoutInfo.toString());
+        this.sendServer(logout);
+        status = "exit";
     }
 }
