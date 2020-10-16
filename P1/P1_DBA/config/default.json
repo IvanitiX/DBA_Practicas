@@ -8,7 +8,6 @@
         "port": 1099
     },
     "analytics": {
-        "assignmentid": 1,
-        "play": "BasePlayground"
+        "assignmentid": 1
     }    
 }
