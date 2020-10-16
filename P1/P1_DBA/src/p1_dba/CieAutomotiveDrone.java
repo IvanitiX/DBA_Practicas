@@ -1,5 +1,6 @@
 package p1_dba;
 
+import ControlPanel.TTYControlPanel;
 import IntegratedAgent.IntegratedAgent;
 import LarvaAgent.LarvaAgent;
 import jade.core.AID;
@@ -14,6 +15,9 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private String key;
     private ArrayList<String> sensorList;
     private String worldName;
+    private TTYControlPanel panel;
+    private int width;
+    private int height;
 
     @Override
     public void setup() {
@@ -32,6 +36,9 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         sensorList.add("energy");
         sensorList.add("gps");
         sensorList.add("visual");
+        
+        panel = new TTYControlPanel(getAID());
+        
         _exitRequested = false;
     }
 
@@ -57,6 +64,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 logout();
             break;
             case "exit":
+                panel.close();
                 _exitRequested = true;
             break;
         }
@@ -71,6 +79,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         this.sendServer(sensorsMessage);
         
         ACLMessage getSensors = this.blockingReceive();
+        panel.feedData(getSensors,width,height);
+        panel.fancyShow();
         String sensors = getSensors.getContent();
         
         JsonObject parsedSensors;
@@ -166,6 +176,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         if (parsedLogin.get("result").asString().equals("ok")){
             status = "doAction";
             key = parsedLogin.get("key").asString();
+            width = parsedLogin.get("width").asInt();
+            height = parsedLogin.get("height").asInt();
         }
         else{
             status = "exit";
