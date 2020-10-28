@@ -102,12 +102,18 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     } 
     
     public void locateObjective(){
+<<<<<<< HEAD
         System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
         System.out.println(droneX + "," + distance*Math.cos(angular));
         System.out.println(droneY + "," + distance*Math.sin(angular));
         objectiveX = (int) ((int) droneX - distance*Math.cos(Math.toRadians(angular)));
         objectiveY = (int) ((int) droneY + distance*Math.sin(Math.toRadians(angular)));
         System.out.println(objectiveX + "," + objectiveY);
+=======
+        objectiveX = (int) Math.round(droneX + distance*Math.sin(angular));
+        objectiveY = (int) Math.round(droneY - distance*Math.cos(angular));
+        
+>>>>>>> 73001a2a17a0383c4a1ed0c70e32839f6df45150
         objectiveLocated = true;
     }
     
