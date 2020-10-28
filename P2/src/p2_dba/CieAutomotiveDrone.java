@@ -27,9 +27,9 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private int maxHeight;
     
     //Parámetros leídos por sensores
-    private int angular;
+    private float angular;
     private float distance;
-    private int compass;
+    private float compass;
     private int droneX, droneY, droneZ;
     private int visualMatrix[][];
     
@@ -39,6 +39,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private int energy;
     private int objectiveX, objectiveY;
     private Map actionsCost = new HashMap<Integer, Double>();
+    private String turn = "no";
     
 
     @Override
@@ -101,9 +102,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     } 
     
     public void locateObjective(){
-        objectiveX = (int) Math.round(droneX + distance*Math.sin(angular));
-        objectiveY = (int) Math.round(droneY + distance*Math.cos(angular));
-        
+        System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
+        System.out.println(droneX + "," + distance*Math.cos(angular));
+        System.out.println(droneY + "," + distance*Math.sin(angular));
+        objectiveX = (int) ((int) droneX - distance*Math.cos(Math.toRadians(angular)));
+        objectiveY = (int) ((int) droneY + distance*Math.sin(Math.toRadians(angular)));
+        System.out.println(objectiveX + "," + objectiveY);
         objectiveLocated = true;
     }
     
@@ -123,7 +127,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 angle = (int) pair.getKey();
             }
         }
-        
+        System.out.println("Cojo el iterador con ángulo " + angle + " y dist. " + minDist);
         return angle;
     }
     
@@ -151,14 +155,15 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         int angle = this.getNextStepAngle();
         
         
-        int dif = compass - angle;
-        String action;
+        int dif = (int) (angle - compass);
+        int dif_inv = (int) (compass - (360+angle));
+        String action = "";
         int nextStepHeight = Integer.MIN_VALUE;
         
         // Si evalúo giro a la derecha
         if (dif == 0){
             action = "moveF";
-            
+            System.out.println(angle);
             if (compass == 0)
                 nextStepHeight = visualMatrix[3][2];
             else if (compass == 45)
@@ -179,24 +184,21 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             if (nextStepHeight > droneZ)
                 action = "moveUP";
         }
-        else if (dif < 0){
-            if (Math.abs(dif) > 180) // No es conveniente girar a la derecha
-                action = "rotateL";
-            else
-                action = "rotateR";
-        }
-        // Evalúo giro a la izquierda
         else{
-            if (Math.abs(dif) > 180) // No es conveniente girar a la izquierda
-                action = "rotateR";
+            if (turn == "no"){
+            if (Math.abs(dif) >= Math.abs(dif_inv) ) // No es conveniente girar a la derecha
+                turn = "rotateL";
             else
-                action = "rotateL";
+                turn = "rotateR";
+            }
+            System.out.println("Giro " + turn);
+            action = turn;
         }
         
         // Estimación de la energía
         if (action == "moveF"){
             
-            if ((droneZ - nextStepHeight + 5)*(sensorsEnergyWaste/5.0+1/5.0) < (energy + sensorsEnergyWaste*6+6)){
+            if ((droneZ - nextStepHeight + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){
                 if (droneZ - visualMatrix[3][3] >= 5)
                     action = "moveD";
                 else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
@@ -206,7 +208,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             }
         }
         else{
-            if ((droneZ - visualMatrix[3][3] + 5)*(sensorsEnergyWaste/5.0+1/5.0) < (energy + sensorsEnergyWaste*6+6)){
+            if ((droneZ - visualMatrix[3][3] + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){
                 if (droneZ - visualMatrix[3][3] >= 5)
                     action = "moveD";
                 else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
@@ -242,6 +244,26 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             energy-=5;
         }
         
+        JsonObject actionToSend = getActions(action);
+        ACLMessage sendAction = new ACLMessage();
+        sendAction.setSender(getAID());
+        sendAction.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        sendAction.setContent(actionToSend.toString());
+        this.sendServer(sendAction);
+        
+        ACLMessage getResult = this.blockingReceive();
+        String result = getResult.getContent();
+       
+        // Esperando respuesta
+        JsonObject parsedResult;
+        parsedResult = Json.parse(result).asObject();
+        
+        if (parsedResult.get("result").asString().equals("ok")){
+            status = "idle";
+        }
+        else{
+            status = "logout";
+        }
     }
     
     public JsonObject getActions (String action){
@@ -270,7 +292,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     } 
     
     public double getDistanceToObjective(int posX, int posY){
-        
+        System.out.println(posX + " " + posY + " " +Math.sqrt(Math.pow(objectiveX-posX,2) + Math.pow(objectiveY-posY,2)));
         return Math.sqrt(Math.pow(objectiveX-posX,2) + Math.pow(objectiveY-posY,2));
     }
     
@@ -355,7 +377,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             Info(sensors);
             JsonArray sensorReadings = parsedSensors.get("details").asObject().get("perceptions").asArray();
             angular = sensorReadings.get(0).asObject().get("data").asArray().get(0).asInt();
-            compass = sensorReadings.get(1).asObject().get("data").asArray().get(0).asInt();
+            compass = sensorReadings.get(1).asObject().get("data").asArray().get(0).asFloat();
             distance = sensorReadings.get(2).asObject().get("data").asArray().get(0).asFloat();
             droneX = sensorReadings.get(3).asObject().get("data").asArray().get(0).asArray().get(0).asInt();
             droneY = sensorReadings.get(3).asObject().get("data").asArray().get(0).asArray().get(1).asInt();
