@@ -20,6 +20,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private ArrayList<String> sensorList;
     private String worldName;
     private TTYControlPanel panel;
+    private ACLMessage worldSender;
+    private ACLMessage worldReceiver;
     
     //Parámetros del mundo
     private int width;
@@ -27,9 +29,9 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private int maxHeight;
     
     //Parámetros leídos por sensores
-    private float angular;
+    private int angular;
     private float distance;
-    private float compass;
+    private int compass;
     private int droneX, droneY, droneZ;
     private int visualMatrix[][];
     
@@ -39,7 +41,6 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private int energy;
     private int objectiveX, objectiveY;
     private Map actionsCost = new HashMap<Integer, Double>();
-    private String turn = "no";
     
 
     @Override
@@ -50,7 +51,13 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         doCheckinLARVA();
         receiver = this.whoLarvaAgent();
         sensorList = new ArrayList();       
-        worldName = "Playground1";
+        worldName = "Playground2";
+        
+        worldSender = new ACLMessage();
+        worldSender.setSender(getAID());
+        worldSender.addReceiver(new AID(receiver, AID.ISLOCALNAME));
+        
+        worldReceiver = new ACLMessage();
         
         sensorList.add("angular");
         sensorList.add("compass");
@@ -102,18 +109,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     } 
     
     public void locateObjective(){
-<<<<<<< HEAD
         System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
         System.out.println(droneX + "," + distance*Math.cos(angular));
         System.out.println(droneY + "," + distance*Math.sin(angular));
-        objectiveX = (int) ((int) droneX - distance*Math.cos(Math.toRadians(angular)));
-        objectiveY = (int) ((int) droneY + distance*Math.sin(Math.toRadians(angular)));
+        objectiveX = (int) ((int) droneX + distance*Math.sin(Math.toRadians(angular)));
+        objectiveY = (int) ((int) droneY - distance*Math.cos(Math.toRadians(angular)));
         System.out.println(objectiveX + "," + objectiveY);
-=======
-        objectiveX = (int) Math.round(droneX + distance*Math.sin(angular));
-        objectiveY = (int) Math.round(droneY - distance*Math.cos(angular));
-        
->>>>>>> 73001a2a17a0383c4a1ed0c70e32839f6df45150
         objectiveLocated = true;
     }
     
@@ -161,8 +162,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         int angle = this.getNextStepAngle();
         
         
-        int dif = (int) (angle - compass);
-        int dif_inv = (int) (compass - (360+angle));
+        int dif = (int) (compass - angle);
         String action = "";
         int nextStepHeight = Integer.MIN_VALUE;
         
@@ -187,21 +187,28 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             else if (compass == -45)
                 nextStepHeight = visualMatrix[2][2];
             
+            System.out.println("Altura dron Z : " + droneZ + "/ Siguiente posición en Z : " + nextStepHeight);
             if (nextStepHeight > droneZ)
                 action = "moveUP";
         }
-        else{
-            if (turn == "no"){
-            if (Math.abs(dif) >= Math.abs(dif_inv) ) // No es conveniente girar a la derecha
-                turn = "rotateL";
+        else if (dif < 0){
+            System.out.println("Evalúo girar a la derecha con D=" + dif);
+            if (Math.abs(dif) > 180) // No es conveniente girar a la derecha
+                action = "rotateL";
             else
-                turn = "rotateR";
-            }
-            System.out.println("Giro " + turn);
-            action = turn;
+                action = "rotateR";
+        }
+        // Evalúo giro a la izquierda
+        else{
+            System.out.println("Evalúo girar a la izquierda con D=" + dif);
+            if (Math.abs(dif) > 180) // No es conveniente girar a la izquierda
+                action = "rotateR";
+            else
+                action = "rotateL";
         }
         
         // Estimación de la energía
+        System.out.println("Energía restante : " + energy);
         if (action == "moveF"){
             
             if ((droneZ - nextStepHeight + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){
@@ -250,21 +257,23 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             energy-=5;
         }
         
-        JsonObject actionToSend = getActions(action);
-        ACLMessage sendAction = new ACLMessage();
-        sendAction.setSender(getAID());
-        sendAction.addReceiver(new AID(receiver, AID.ISLOCALNAME));
-        sendAction.setContent(actionToSend.toString());
-        this.sendServer(sendAction);
+        if (action.equals("rescue")){
+            Info("Rescatando al objetivo");
+        }
         
-        ACLMessage getResult = this.blockingReceive();
-        String result = getResult.getContent();
+        JsonObject actionToSend = getActions(action);
+        worldSender = worldReceiver.createReply();
+        worldSender.setContent(actionToSend.toString());
+        this.sendServer(worldSender);
+        
+        worldReceiver = this.blockingReceive();
+        String result = worldReceiver.getContent();
        
         // Esperando respuesta
         JsonObject parsedResult;
         parsedResult = Json.parse(result).asObject();
         
-        if (parsedResult.get("result").asString().equals("ok")){
+        if (parsedResult.get("result").asString().equals("ok") && !(status.equals("logout"))){
             status = "idle";
         }
         else{
@@ -327,14 +336,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     public void login(){
         JsonObject loginInfo = getDeploymentMessage();
         
-        ACLMessage sendLogin = new ACLMessage();
-        sendLogin.setSender(getAID());
-        sendLogin.addReceiver(new AID(receiver, AID.ISLOCALNAME));
-        sendLogin.setContent(loginInfo.toString());
-        this.sendServer(sendLogin);
+        worldSender.setContent(loginInfo.toString());
+        this.sendServer(worldSender);
         
-        ACLMessage getLogin = this.blockingReceive();
-        String login = getLogin.getContent();
+        worldReceiver = this.blockingReceive();
+        String login = worldReceiver.getContent();
        
         // Esperando respuesta
         JsonObject parsedLogin;
@@ -353,28 +359,23 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     }
     
     public void logout(){
+        this.readSensors();
         JsonObject logoutInfo = getLogout();
-        ACLMessage logout = new ACLMessage();
-        logout.setSender(getAID());
-        logout.addReceiver(new AID(receiver, AID.ISLOCALNAME));
-        logout.setContent(logoutInfo.toString());
-        this.sendServer(logout);
+        worldSender.setContent(logoutInfo.toString());
+        this.sendServer(worldSender);
         Info("Solicitando logout");
         status = "exit";
     }
     
     public void readSensors(){
         JsonObject sensorsRequest = getSensors();
-        ACLMessage sensorsMessage = new ACLMessage();
-        sensorsMessage.setSender(getAID());
-        sensorsMessage.addReceiver(new AID(receiver, AID.ISLOCALNAME));
-        sensorsMessage.setContent(sensorsRequest.toString());
-        this.sendServer(sensorsMessage);
+        worldSender.setContent(sensorsRequest.toString());
+        this.sendServer(worldSender);
         
-        ACLMessage getSensors = this.blockingReceive();
-        panel.feedData(getSensors,width,height,maxHeight);
+        worldReceiver = this.blockingReceive();
+        panel.feedData(worldReceiver,width,height,maxHeight);
         panel.fancyShow();
-        String sensors = getSensors.getContent();
+        String sensors = worldReceiver.getContent();
         
         JsonObject parsedSensors;
         parsedSensors = Json.parse(sensors).asObject();
@@ -382,8 +383,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         if (parsedSensors.get("result").asString().equals("ok")){
             Info(sensors);
             JsonArray sensorReadings = parsedSensors.get("details").asObject().get("perceptions").asArray();
-            angular = sensorReadings.get(0).asObject().get("data").asArray().get(0).asInt();
-            compass = sensorReadings.get(1).asObject().get("data").asArray().get(0).asFloat();
+            angular = (int) sensorReadings.get(0).asObject().get("data").asArray().get(0).asFloat();
+            compass = (int) sensorReadings.get(1).asObject().get("data").asArray().get(0).asFloat();
             distance = sensorReadings.get(2).asObject().get("data").asArray().get(0).asFloat();
             droneX = sensorReadings.get(3).asObject().get("data").asArray().get(0).asArray().get(0).asInt();
             droneY = sensorReadings.get(3).asObject().get("data").asArray().get(0).asArray().get(1).asInt();
