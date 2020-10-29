@@ -112,8 +112,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
         System.out.println(droneX + "," + distance*Math.cos(angular));
         System.out.println(droneY + "," + distance*Math.sin(angular));
-        objectiveX = (int) ((int) droneX + distance*Math.sin(Math.toRadians(angular)));
-        objectiveY = (int) ((int) droneY - distance*Math.cos(Math.toRadians(angular)));
+        objectiveX = (int) Math.round(droneX + distance*Math.sin(Math.toRadians(angular)));
+        objectiveY = (int) Math.round(droneY - distance*Math.cos(Math.toRadians(angular)));
         System.out.println(objectiveX + "," + objectiveY);
         objectiveLocated = true;
     }
@@ -170,24 +170,24 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         if (dif == 0){
             action = "moveF";
             System.out.println(angle);
-            if (compass == 0)
-                nextStepHeight = visualMatrix[3][2];
-            else if (compass == 45)
-                nextStepHeight = visualMatrix[4][2];
-            else if (compass == 90)
-                nextStepHeight = visualMatrix[4][3];
-            else if (compass == 135)
-                nextStepHeight = visualMatrix[4][4];
-            else if (compass == 180)
-                nextStepHeight = visualMatrix[3][4];
-            else if (compass == -135)
-                nextStepHeight = visualMatrix[2][4];
-            else if (compass == -90)
+            if (compass - 0 < 0.1 && compass - 0 > -0.1)
                 nextStepHeight = visualMatrix[2][3];
-            else if (compass == -45)
+            else if (compass - 45 < 0.1 && compass - 45 > -0.1)
+                nextStepHeight = visualMatrix[2][4];
+            else if (compass - 90 < 0.1 && compass - 90 > -0.1)
+                nextStepHeight = visualMatrix[3][4];
+            else if (compass - 135 < 0.1 && compass - 135 > -0.1)
+                nextStepHeight = visualMatrix[4][4];
+            else if (compass - 180 < 0.1 && compass - 180 > -0.1)
+                nextStepHeight = visualMatrix[4][3];
+            else if (compass - (-135) < 0.1 && compass - (-135) > -0.1)
+                nextStepHeight = visualMatrix[4][2];
+            else if (compass - (-90) < 0.1 && compass - (-90) > -0.1)
+                nextStepHeight = visualMatrix[3][2];
+            else if (compass - (-45) < 0.1 && compass - (-45) > -0.1)
                 nextStepHeight = visualMatrix[2][2];
             
-            System.out.println("Altura dron Z : " + droneZ + "/ Siguiente posición en Z : " + nextStepHeight);
+            System.out.println("Altura dron Z : " + droneZ + "/ Siguiente posición en Z : " + nextStepHeight + "\n Distancia al objetivo : " + distance);
             if (nextStepHeight > droneZ)
                 action = "moveUP";
         }
