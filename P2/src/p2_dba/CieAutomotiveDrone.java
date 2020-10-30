@@ -51,7 +51,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         doCheckinLARVA();
         receiver = this.whoLarvaAgent();
         sensorList = new ArrayList();       
-        worldName = "Playground2";
+        worldName = "World6";
         
         worldSender = new ACLMessage();
         worldSender.setSender(getAID());
@@ -140,14 +140,45 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     
     
     public void obtainActionsCost(){
-        actionsCost.put(0, this.getDistanceToObjective(droneX, droneY-1));
-        actionsCost.put(45, this.getDistanceToObjective(droneX+1, droneY-1));
-        actionsCost.put(90, this.getDistanceToObjective(droneX+1, droneY));
-        actionsCost.put(135, this.getDistanceToObjective(droneX+1, droneY+1));
-        actionsCost.put(180, this.getDistanceToObjective(droneX, droneY+1));
-        actionsCost.put(-135, this.getDistanceToObjective(droneX-1, droneY+1));
-        actionsCost.put(-90, this.getDistanceToObjective(droneX-1, droneY));
-        actionsCost.put(-45, this.getDistanceToObjective(droneX-1, droneY-1));
+        if (visualMatrix[2][3] < -maxHeight || visualMatrix[2][3] >= maxHeight){
+            actionsCost.put(0, Double.MAX_VALUE);
+        }
+        else actionsCost.put(0, this.getDistanceToObjective(droneX, droneY-1));
+        
+        if (visualMatrix[2][4] < -maxHeight || visualMatrix[2][4] >= maxHeight){
+            actionsCost.put(45, Double.MAX_VALUE);
+        }
+        else actionsCost.put(45, this.getDistanceToObjective(droneX+1, droneY-1));
+        
+        if (visualMatrix[3][4] < -maxHeight || visualMatrix[3][4] >= maxHeight){
+            actionsCost.put(90, Double.MAX_VALUE);
+        }
+        else actionsCost.put(90, this.getDistanceToObjective(droneX+1, droneY));
+        
+        if (visualMatrix[4][4] < -maxHeight || visualMatrix[4][4] >= maxHeight){
+            actionsCost.put(135, Double.MAX_VALUE);
+        }
+        else actionsCost.put(135, this.getDistanceToObjective(droneX+1, droneY+1));
+        
+        if (visualMatrix[4][3] < -maxHeight || visualMatrix[4][3] >= maxHeight){
+            actionsCost.put(180, Double.MAX_VALUE);
+        }
+        else actionsCost.put(180, this.getDistanceToObjective(droneX, droneY+1));
+        
+        if (visualMatrix[4][2] < -maxHeight || visualMatrix[4][2] >= maxHeight){
+            actionsCost.put(-135, Double.MAX_VALUE);
+        }
+        else actionsCost.put(-135, this.getDistanceToObjective(droneX-1, droneY+1));
+        
+        if (visualMatrix[3][2] < -maxHeight || visualMatrix[3][2] >= maxHeight){
+            actionsCost.put(-90, Double.MAX_VALUE);
+        }
+        else actionsCost.put(-90, this.getDistanceToObjective(droneX-1, droneY));
+        
+        if (visualMatrix[2][2] < -maxHeight || visualMatrix[2][2] >= maxHeight){
+            actionsCost.put(-45, Double.MAX_VALUE);
+        }
+        else actionsCost.put(-45, this.getDistanceToObjective(droneX-1, droneY-1));
     }
     
     
@@ -211,7 +242,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         System.out.println("Energía restante : " + energy);
         if (action == "moveF"){
             
-            if ((droneZ - nextStepHeight + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){
+            /*if ((droneZ - nextStepHeight + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){*/
+            if(Math.floor((droneZ - nextStepHeight)/5.0)*(sensorsEnergyWaste+5) + ((droneZ - nextStepHeight)%5.0) + sensorsEnergyWaste + 5 >= energy){
                 if (droneZ - visualMatrix[3][3] >= 5)
                     action = "moveD";
                 else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
@@ -221,7 +253,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             }
         }
         else{
-            if ((droneZ - visualMatrix[3][3] + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){
+            /*if ((droneZ - visualMatrix[3][3] + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){*/
+            if(Math.floor((droneZ - visualMatrix[3][3])/5.0)*(sensorsEnergyWaste+5) + ((droneZ - visualMatrix[3][3])%5.0) + sensorsEnergyWaste + 5 >= energy){
                 if (droneZ - visualMatrix[3][3] >= 5)
                     action = "moveD";
                 else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
@@ -231,18 +264,23 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             }
         }
         
+        
         // Si hemos alcanzado el objetivo, descendemos
         if (distance == 0){
             if (droneZ - visualMatrix[3][3] >= 5)
                 action = "moveD";
             else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
                 action = "touchD";
-            else if (energy < 20)
+            else if (energy < 10)
                 action = "recharge";
             else{
                 action = "rescue";
                 status = "logout";
             }
+        }
+        else if (droneX == objectiveX && droneY == objectiveY){
+            this.locateObjective();
+            action = "rotateR";
         }
         
         
@@ -352,6 +390,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             width = parsedLogin.get("width").asInt();
             height = parsedLogin.get("height").asInt();
             maxHeight = parsedLogin.get("maxflight").asInt();
+            System.out.println("Altura máxima : " + maxHeight + "\n\n");
         }
         else{
             status = "exit";
