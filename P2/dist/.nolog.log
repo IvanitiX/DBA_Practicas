@@ -1,0 +1,6 @@
+{"date":"30/10/2020_13:33:02","record":{"agent":"bootstrap","info":"No configuration [default] has been found"}}
+{"date":"30/10/2020_13:33:05","record":{"agent":"bootstrap","info":"jade.MicroBooot ERROR CREATING AGENT 45923405H jade.wrapper.ControllerException: FrontEndContainer  not found"}}
+{"date":"30/10/2020_13:45:55","record":{"agent":"bootstrap","info":"No configuration [default] has been found"}}
+{"date":"30/10/2020_13:46:01","record":{"agent":"bootstrap","info":"jade.MicroBooot ERROR CREATING AGENT 45923405H jade.wrapper.ControllerException: FrontEndContainer  not found"}}
+{"date":"30/10/2020_16:22:43","record":{"agent":"bootstrap","info":"No configuration [default] has been found"}}
+{"date":"30/10/2020_16:22:47","record":{"agent":"bootstrap","info":"jade.MicroBooot ERROR CREATING AGENT 45923405H jade.wrapper.ControllerException: FrontEndContainer  not found"}}

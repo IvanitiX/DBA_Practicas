@@ -11,8 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.awt.Point;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class CieAutomotiveDrone extends IntegratedAgent{
+    
+    static int MAX_MEMORY_SIZE = 16;
     
     String receiver;
     private String status;
@@ -40,7 +45,10 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private int sensorsEnergyWaste;
     private int energy;
     private int objectiveX, objectiveY;
-    private Map actionsCost = new HashMap<Integer, Double>();
+    private Map actionsCost;
+    private Queue<Point> locationsMemory;
+    boolean borderingMode;
+    int nextStepHeight;
     
 
     @Override
@@ -51,7 +59,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         doCheckinLARVA();
         receiver = this.whoLarvaAgent();
         sensorList = new ArrayList();       
-        worldName = "World6";
+        worldName = "World7";
         
         worldSender = new ACLMessage();
         worldSender.setSender(getAID());
@@ -69,6 +77,10 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         sensorsEnergyWaste = 5;
         objectiveLocated = false;
         visualMatrix = new int[7][7];
+        locationsMemory = new LinkedList<Point>();
+        actionsCost = new HashMap<Integer, Double>();
+        borderingMode = false;
+        nextStepHeight = Integer.MIN_VALUE;
         
         panel = new TTYControlPanel(getAID());
         
@@ -108,6 +120,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
     } 
     
+    public String borderingObstacle(){
+        String action = "";
+        
+        return action;
+    }
+    
     public void locateObjective(){
         System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
         System.out.println(droneX + "," + distance*Math.cos(angular));
@@ -118,72 +136,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         objectiveLocated = true;
     }
     
-    
-    public int getNextStepAngle(){
-        int angle = 0;
-        
-        Iterator it = actionsCost.entrySet().iterator();
-        
-        double minDist = Double.MAX_VALUE;
-        
-        while(it.hasNext()){
-            Map.Entry pair = (Map.Entry) it.next();
-            
-            if ((double) pair.getValue() < minDist){
-                minDist = (double) pair.getValue();
-                angle = (int) pair.getKey();
-            }
-        }
-        System.out.println("Cojo el iterador con ángulo " + angle + " y dist. " + minDist);
-        return angle;
-    }
-    
-    
-    public void obtainActionsCost(){
-        if (visualMatrix[2][3] < -maxHeight || visualMatrix[2][3] >= maxHeight){
-            actionsCost.put(0, Double.MAX_VALUE);
-        }
-        else actionsCost.put(0, this.getDistanceToObjective(droneX, droneY-1));
-        
-        if (visualMatrix[2][4] < -maxHeight || visualMatrix[2][4] >= maxHeight){
-            actionsCost.put(45, Double.MAX_VALUE);
-        }
-        else actionsCost.put(45, this.getDistanceToObjective(droneX+1, droneY-1));
-        
-        if (visualMatrix[3][4] < -maxHeight || visualMatrix[3][4] >= maxHeight){
-            actionsCost.put(90, Double.MAX_VALUE);
-        }
-        else actionsCost.put(90, this.getDistanceToObjective(droneX+1, droneY));
-        
-        if (visualMatrix[4][4] < -maxHeight || visualMatrix[4][4] >= maxHeight){
-            actionsCost.put(135, Double.MAX_VALUE);
-        }
-        else actionsCost.put(135, this.getDistanceToObjective(droneX+1, droneY+1));
-        
-        if (visualMatrix[4][3] < -maxHeight || visualMatrix[4][3] >= maxHeight){
-            actionsCost.put(180, Double.MAX_VALUE);
-        }
-        else actionsCost.put(180, this.getDistanceToObjective(droneX, droneY+1));
-        
-        if (visualMatrix[4][2] < -maxHeight || visualMatrix[4][2] >= maxHeight){
-            actionsCost.put(-135, Double.MAX_VALUE);
-        }
-        else actionsCost.put(-135, this.getDistanceToObjective(droneX-1, droneY+1));
-        
-        if (visualMatrix[3][2] < -maxHeight || visualMatrix[3][2] >= maxHeight){
-            actionsCost.put(-90, Double.MAX_VALUE);
-        }
-        else actionsCost.put(-90, this.getDistanceToObjective(droneX-1, droneY));
-        
-        if (visualMatrix[2][2] < -maxHeight || visualMatrix[2][2] >= maxHeight){
-            actionsCost.put(-45, Double.MAX_VALUE);
-        }
-        else actionsCost.put(-45, this.getDistanceToObjective(droneX-1, droneY-1));
-    }
-    
-    
-    public void decide(){
-        
+    public String findingObjective(){
         // Obtenemos inicialmente las coordenadas del objetivo
         if (!objectiveLocated)
             locateObjective();
@@ -191,11 +144,79 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         // Determinamos acción a realizar
         this.obtainActionsCost();
         int angle = this.getNextStepAngle();
+        nextStepHeight = Integer.MIN_VALUE;
         
         
         int dif = (int) (compass - angle);
         String action = "";
-        int nextStepHeight = Integer.MIN_VALUE;
+        
+
+        //Offset se tiene que adecuar por si hubiera un fin de mapa
+        int offset = 3;
+        int nextHeight ; 
+        //borderingMode = true;
+
+        switch(compass){
+            case 0: 
+                nextHeight = visualMatrix[2][3];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX, droneY-1))){
+                    objectiveX = droneX;
+                    objectiveY = droneY - offset ;
+                }
+            break;
+            case 45: 
+                nextHeight = visualMatrix[2][4];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY-1))){
+                    objectiveX = droneX + offset;
+                    objectiveY = droneY - offset ;
+                }
+            break;
+            case 90: 
+                nextHeight = visualMatrix[3][4];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY))){
+                    objectiveX = droneX + offset;
+                    objectiveY = droneY ;
+                }
+            break;
+            case 135:
+                nextHeight = visualMatrix[4][4];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY+1))){
+                    objectiveX = droneX + offset;
+                    objectiveY = droneY + offset ;
+                }
+            break;
+            case 180:
+                nextHeight = visualMatrix[4][3];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX, droneY+1))){
+                    objectiveX = droneX;
+                    objectiveY = droneY + offset ;
+                }
+            break;
+            case -135:
+                nextHeight = visualMatrix[4][2];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY+1))){ 
+                    objectiveX = droneX - offset;
+                    objectiveY = droneY + offset ;
+                }
+            break;
+            case -90: 
+                nextHeight = visualMatrix[2][3];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY))){
+                    objectiveX = droneX - offset;
+                    objectiveY = droneY ;
+                }
+            break;
+            case -45:
+                nextHeight = visualMatrix[2][2];
+                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY-1))){
+                    objectiveX = droneX - offset ;
+                    objectiveY = droneY - offset ;
+                }
+            break;
+
+        }
+        
+        System.out.println("Objetivo actual -> (" + objectiveX + "," + objectiveY + ")");
         
         // Si evalúo giro a la derecha
         if (dif == 0){
@@ -237,6 +258,87 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             else
                 action = "rotateL";
         }
+        
+        
+        return action;
+    }
+    
+    
+    public int getNextStepAngle(){
+        int angle = 0;
+        
+        Iterator it = actionsCost.entrySet().iterator();
+        
+        double minDist = Double.MAX_VALUE;
+        
+        while(it.hasNext()){
+            Map.Entry pair = (Map.Entry) it.next();
+            
+            if ((double) pair.getValue() < minDist){
+                minDist = (double) pair.getValue();
+                angle = (int) pair.getKey();
+            }
+        }
+        System.out.println("Cojo el iterador con ángulo " + angle + " y dist. " + minDist);
+        return angle;
+    }
+    
+    
+    public void obtainActionsCost(){
+        if (visualMatrix[2][3] < -maxHeight || visualMatrix[2][3] >= maxHeight || locationsMemory.contains(new Point(droneX, droneY-1))){
+            actionsCost.put(0, Double.MAX_VALUE);
+        }
+        else actionsCost.put(0, this.getDistanceToObjective(droneX, droneY-1));
+        
+        if (visualMatrix[2][4] < -maxHeight || visualMatrix[2][4] >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY-1))){
+            actionsCost.put(45, Double.MAX_VALUE);
+        }
+        else actionsCost.put(45, this.getDistanceToObjective(droneX+1, droneY-1));
+        
+        if (visualMatrix[3][4] < -maxHeight || visualMatrix[3][4] >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY))){
+            actionsCost.put(90, Double.MAX_VALUE);
+        }
+        else actionsCost.put(90, this.getDistanceToObjective(droneX+1, droneY));
+        
+        if (visualMatrix[4][4] < -maxHeight || visualMatrix[4][4] >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY+1))){
+            actionsCost.put(135, Double.MAX_VALUE);
+        }
+        else actionsCost.put(135, this.getDistanceToObjective(droneX+1, droneY+1));
+        
+        if (visualMatrix[4][3] < -maxHeight || visualMatrix[4][3] >= maxHeight || locationsMemory.contains(new Point(droneX, droneY+1))){
+            actionsCost.put(180, Double.MAX_VALUE);
+        }
+        else actionsCost.put(180, this.getDistanceToObjective(droneX, droneY+1));
+        
+        if (visualMatrix[4][2] < -maxHeight || visualMatrix[4][2] >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY+1))){
+            actionsCost.put(-135, Double.MAX_VALUE);
+        }
+        else actionsCost.put(-135, this.getDistanceToObjective(droneX-1, droneY+1));
+        
+        if (visualMatrix[3][2] < -maxHeight || visualMatrix[3][2] >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY))){
+            actionsCost.put(-90, Double.MAX_VALUE);
+        }
+        else actionsCost.put(-90, this.getDistanceToObjective(droneX-1, droneY));
+        
+        if (visualMatrix[2][2] < -maxHeight || visualMatrix[2][2] >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY-1))){
+            actionsCost.put(-45, Double.MAX_VALUE);
+        }
+        else actionsCost.put(-45, this.getDistanceToObjective(droneX-1, droneY-1));
+    }
+    
+    
+    public void decide(){
+        String action = "";
+        
+        if(!borderingMode){
+            /*Modo de búsqueda de Objective*/
+            action = findingObjective();
+        }
+        else{
+            /*Modo Bordeo*/
+            action = borderingObstacle();
+        }
+        
         
         // Estimación de la energía
         System.out.println("Energía restante : " + energy);
@@ -298,6 +400,23 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         if (action.equals("rescue")){
             Info("Rescatando al objetivo");
         }
+        
+        /*Manejamos la memoria del dron*/
+        Point currentPos = new Point(droneX,droneY);
+        
+        if(!locationsMemory.contains(currentPos)){
+            locationsMemory.add(currentPos);
+        }
+        
+        if (locationsMemory.size() >= MAX_MEMORY_SIZE){
+            locationsMemory.remove();
+        }
+        
+        System.out.println("Tamaño de cola de memoria = " + locationsMemory.size());
+        for (Point p : locationsMemory){
+            System.out.print("(" + p.getX() + "," + p.getY() + ")\t");
+        }
+        System.out.println("\n________\n\n");
         
         JsonObject actionToSend = getActions(action);
         worldSender = worldReceiver.createReply();
