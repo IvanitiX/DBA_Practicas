@@ -201,7 +201,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 }
             break;
             case -90: 
-                nextHeight = visualMatrix[2][3];
+                nextHeight = visualMatrix[3][2];
                 if(nextHeight >= maxHeight){
                     objectiveX = droneX - offset;
                     objectiveY = droneY ;
@@ -217,8 +217,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
 
         }
         timer--;
-        if (timer <= 0)
+        if (timer <= 0){
             locateObjective();
+            timer = 210;
+        }
+            
         System.out.println("Objetivo actual -> (" + objectiveX + "," + objectiveY + ")");
         
         // Si evalúo giro a la derecha

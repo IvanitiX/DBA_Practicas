@@ -141,3 +141,130 @@
 {"date":"11/10/2020_19:28:10","record":{"agent":"09079064K","info":"Waiting to delete container"}}
 {"date":"11/10/2020_19:28:16","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
 {"date":"11/10/2020_19:28:16","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Found  PLAY BasePlayground"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <PLAY BasePlayground>"}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"ABORT! NO LARVA Agent found for this assignment. Please ask the teacher."}}
+{"date":"12/10/2020_19:46:38","record":{"agent":"09079064K","info":"Waiting to delete container"}}
+{"date":"12/10/2020_19:46:45","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_19:50:19","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_19:50:20","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:50:20","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_19:50:24","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_19:50:24","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"En login :D"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:52:10","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_19:52:14","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_19:52:14","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_19:53:09","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:53:10","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_19:53:14","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_19:53:14","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"12/10/2020_19:54:32","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:54:32","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"ok"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:54:33","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_19:54:37","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_19:54:37","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Entro a plain execute"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:55:24","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_19:55:28","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_19:55:28","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_19:56:20","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_19:56:21","record":{"agent":"09079064K","info":"Acción realizada con éxito"}}
+{"date":"12/10/2020_19:56:21","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_19:56:22","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_19:56:26","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_19:56:26","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"12/10/2020_20:10:46","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"12/10/2020_20:10:47","record":{"agent":"09079064K","info":"{\"result\":\"ok\",\"details\":{\"name\":\"09079064K\",\"perceptions\":[{\"sensor\":\"alive\",\"data\":[1]},{\"sensor\":\"angular\",\"data\":[-45.00000000000001]},{\"sensor\":\"compass\",\"data\":[90]},{\"sensor\":\"distance\",\"data\":[14.142135623730951]},{\"sensor\":\"energy\",\"data\":[10000]},{\"sensor\":\"gps\",\"data\":[[10,10,10]]},{\"sensor\":\"visual\",\"data\":[[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10]]}]}}"}}
+{"date":"12/10/2020_20:10:47","record":{"agent":"09079064K","info":"Acción realizada con éxito"}}
+{"date":"12/10/2020_20:10:47","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"12/10/2020_20:10:47","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"12/10/2020_20:10:51","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"12/10/2020_20:10:51","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"16/10/2020_10:16:15","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"16/10/2020_10:16:15","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"16/10/2020_10:16:16","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"16/10/2020_10:16:16","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"16/10/2020_10:16:16","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"16/10/2020_10:16:16","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"16/10/2020_10:16:16","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"16/10/2020_10:16:16","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"16/10/2020_10:16:18","record":{"agent":"09079064K","info":"{\"result\":\"ok\",\"details\":{\"name\":\"09079064K\",\"perceptions\":[{\"sensor\":\"alive\",\"data\":[1]},{\"sensor\":\"angular\",\"data\":[-45.00000000000001]},{\"sensor\":\"compass\",\"data\":[90]},{\"sensor\":\"distance\",\"data\":[14.142135623730951]},{\"sensor\":\"energy\",\"data\":[10000]},{\"sensor\":\"gps\",\"data\":[[10,10,10]]},{\"sensor\":\"visual\",\"data\":[[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10]]}]}}"}}
+{"date":"16/10/2020_10:16:18","record":{"agent":"09079064K","info":"Acción realizada con éxito"}}
+{"date":"16/10/2020_10:16:18","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"16/10/2020_10:16:18","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"16/10/2020_10:16:22","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"16/10/2020_10:16:22","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"Trying to checkin in the platform"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"Requesting checkin to AgentIdentityManager"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"Chekin confirmed in the platform"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"Trying to register in LARVA"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"Found ASSIGNMENTID 1"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"Retrieving the name of the corresponding LARVA agent for service <Analytics ASSIGNMENTID 1>"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"LARVA Agent WorldManager found. Requesting registration"}}
+{"date":"16/10/2020_10:16:46","record":{"agent":"09079064K","info":"\u001b[38;2;0;0;255mSuccesfully registered in LARVA"}}
+{"date":"16/10/2020_10:16:48","record":{"agent":"09079064K","info":"{\"result\":\"ok\",\"details\":{\"name\":\"09079064K\",\"perceptions\":[{\"sensor\":\"alive\",\"data\":[1]},{\"sensor\":\"angular\",\"data\":[-45.00000000000001]},{\"sensor\":\"compass\",\"data\":[90]},{\"sensor\":\"distance\",\"data\":[14.142135623730951]},{\"sensor\":\"energy\",\"data\":[10000]},{\"sensor\":\"gps\",\"data\":[[10,10,10]]},{\"sensor\":\"visual\",\"data\":[[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10],[10,10,10,10,10,10,10]]}]}}"}}
+{"date":"16/10/2020_10:16:49","record":{"agent":"09079064K","info":"Acción realizada con éxito"}}
+{"date":"16/10/2020_10:16:49","record":{"agent":"09079064K","info":"Requesting unregistration in LARVA"}}
+{"date":"16/10/2020_10:16:49","record":{"agent":"09079064K","info":"Succesfully unregistered in LARVA"}}
+{"date":"16/10/2020_10:16:53","record":{"agent":"09079064K","info":"Trying to checkout from the platform"}}
+{"date":"16/10/2020_10:16:53","record":{"agent":"09079064K","info":"Checked-out from the platform"}}
