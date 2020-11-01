@@ -17,7 +17,7 @@ import java.util.Queue;
 
 public class CieAutomotiveDrone extends IntegratedAgent{
     
-    static int MAX_MEMORY_SIZE = 16;
+    static int MAX_MEMORY_SIZE = 100;
     
     String receiver;
     private String status;
@@ -49,7 +49,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private Queue<Point> locationsMemory;
     boolean borderingMode;
     int nextStepHeight;
-    
+    int timer;
 
     @Override
     public void setup() {
@@ -59,7 +59,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         doCheckinLARVA();
         receiver = this.whoLarvaAgent();
         sensorList = new ArrayList();       
-        worldName = "World7";
+        worldName = "World9";
         
         worldSender = new ACLMessage();
         worldSender.setSender(getAID());
@@ -81,6 +81,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         actionsCost = new HashMap<Integer, Double>();
         borderingMode = false;
         nextStepHeight = Integer.MIN_VALUE;
+        timer = 210;
         
         panel = new TTYControlPanel(getAID());
         
@@ -159,63 +160,65 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         switch(compass){
             case 0: 
                 nextHeight = visualMatrix[2][3];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX, droneY-1))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX;
                     objectiveY = droneY - offset ;
                 }
             break;
             case 45: 
                 nextHeight = visualMatrix[2][4];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY-1))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX + offset;
                     objectiveY = droneY - offset ;
                 }
             break;
             case 90: 
                 nextHeight = visualMatrix[3][4];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX + offset;
                     objectiveY = droneY ;
                 }
             break;
             case 135:
                 nextHeight = visualMatrix[4][4];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX+1, droneY+1))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX + offset;
                     objectiveY = droneY + offset ;
                 }
             break;
             case 180:
                 nextHeight = visualMatrix[4][3];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX, droneY+1))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX;
                     objectiveY = droneY + offset ;
                 }
             break;
             case -135:
                 nextHeight = visualMatrix[4][2];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY+1))){ 
+                if(nextHeight >= maxHeight){ 
                     objectiveX = droneX - offset;
                     objectiveY = droneY + offset ;
                 }
             break;
             case -90: 
                 nextHeight = visualMatrix[2][3];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX - offset;
                     objectiveY = droneY ;
                 }
             break;
             case -45:
                 nextHeight = visualMatrix[2][2];
-                if(nextHeight >= maxHeight || locationsMemory.contains(new Point(droneX-1, droneY-1))){
+                if(nextHeight >= maxHeight){
                     objectiveX = droneX - offset ;
                     objectiveY = droneY - offset ;
                 }
             break;
 
         }
-        
+        timer--;
+        if (timer <= 0)
+            locateObjective();
         System.out.println("Objetivo actual -> (" + objectiveX + "," + objectiveY + ")");
         
         // Si evalúo giro a la derecha
