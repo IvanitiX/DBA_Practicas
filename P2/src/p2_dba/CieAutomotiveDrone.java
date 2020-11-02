@@ -44,12 +44,13 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private boolean objectiveLocated;
     private int sensorsEnergyWaste;
     private int energy;
-    private int objectiveX, objectiveY;
+    private double objectiveX, objectiveY;
     private Map actionsCost;
     private Queue<Point> locationsMemory;
-    boolean borderingMode;
-    int nextStepHeight;
-    int timer;
+    private boolean borderingMode;
+    private boolean miniObjective;
+    private int nextStepHeight;
+    private int timer;
 
     @Override
     public void setup() {
@@ -80,6 +81,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         locationsMemory = new LinkedList<Point>();
         actionsCost = new HashMap<Integer, Double>();
         borderingMode = false;
+        miniObjective = false;
         nextStepHeight = Integer.MIN_VALUE;
         timer = 210;
         
@@ -128,18 +130,19 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     }
     
     public void locateObjective(){
+        miniObjective = false;
         System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
         System.out.println(droneX + "," + distance*Math.cos(angular));
         System.out.println(droneY + "," + distance*Math.sin(angular));
-        objectiveX = (int) Math.round(droneX + distance*Math.sin(Math.toRadians(angular)));
-        objectiveY = (int) Math.round(droneY - distance*Math.cos(Math.toRadians(angular)));
+        objectiveX = droneX + distance*Math.sin(Math.toRadians(angular));
+        objectiveY = droneY - distance*Math.cos(Math.toRadians(angular));
         System.out.println(objectiveX + "," + objectiveY);
         objectiveLocated = true;
     }
     
     public String findingObjective(){
         // Obtenemos inicialmente las coordenadas del objetivo
-        if (!objectiveLocated)
+        if (!objectiveLocated || !miniObjective)
             locateObjective();
         
         // Determinamos acción a realizar
@@ -154,7 +157,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
 
         //Offset se tiene que adecuar por si hubiera un fin de mapa
         int offset = 3;
-        int nextHeight ; 
+        int nextHeight = 0; 
         //borderingMode = true;
 
         switch(compass){
@@ -216,6 +219,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             break;
 
         }
+        
+        if (nextHeight >= maxHeight){
+            miniObjective = true;
+        }
+            
+            
         timer--;
         if (timer <= 0){
             locateObjective();
@@ -279,7 +288,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         
         while(it.hasNext()){
             Map.Entry pair = (Map.Entry) it.next();
-            
+            System.out.println(pair.getValue()+" "+pair.getKey());
             if ((double) pair.getValue() < minDist){
                 minDist = (double) pair.getValue();
                 angle = (int) pair.getKey();
@@ -386,7 +395,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 status = "logout";
             }
         }
-        else if (droneX == objectiveX && droneY == objectiveY){
+        else if (droneX == Math.round(objectiveX) && droneY == Math.round(objectiveY)){
             this.locateObjective();
             action = "rotateR";
         }
