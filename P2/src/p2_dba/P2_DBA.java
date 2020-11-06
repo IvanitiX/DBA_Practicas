@@ -1,7 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
  */
 package p2_dba;
 

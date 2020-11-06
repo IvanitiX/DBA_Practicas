@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Scanner;
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+ */
 public class CieAutomotiveDrone extends IntegratedAgent{
     
     static int MAX_MEMORY_SIZE = 100;
@@ -44,14 +46,16 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     private boolean objectiveLocated;
     private int sensorsEnergyWaste;
     private int energy;
-    private double objectiveX, objectiveY;
+    private int objectiveX, objectiveY;
     private Map actionsCost;
     private Queue<Point> locationsMemory;
-    private boolean borderingMode;
-    private boolean miniObjective;
     private int nextStepHeight;
     private int timer;
 
+    /**
+     * Inicializa los componentes del dron
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     @Override
     public void setup() {
         super.setup();
@@ -80,8 +84,6 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         visualMatrix = new int[7][7];
         locationsMemory = new LinkedList<Point>();
         actionsCost = new HashMap<Integer, Double>();
-        borderingMode = false;
-        miniObjective = false;
         nextStepHeight = Integer.MIN_VALUE;
         timer = 210;
         
@@ -90,6 +92,9 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         _exitRequested = false;
     }
 
+    /**
+     * Desloguea al agente de la plataforma
+    */
     @Override
     public void takeDown() {
         this.doCheckoutLARVA();
@@ -97,13 +102,15 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         super.takeDown();
     }
 
-    
+    /**
+     * Este método, en función del estado del agente en cada iteración, delega la ejecución de dicha iteración a un método diferente
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     @Override
     public void plainExecute() {
         switch(status){
             case "login":
                 login();
-                
             break;
             case "readSensors":
                 readSensors();
@@ -123,43 +130,15 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
     } 
     
-    public String borderingObstacle(){
-        String action = "";
-        
-        return action;
-    }
-    
-    public void locateObjective(){
-        miniObjective = false;
-        System.out.println("Angular : " + angular + ", Sin/Cos : " + Math.sin(Math.toRadians(angular)) + "/" + Math.cos(Math.toRadians(angular)));
-        System.out.println(droneX + "," + distance*Math.cos(angular));
-        System.out.println(droneY + "," + distance*Math.sin(angular));
-        objectiveX = droneX + distance*Math.sin(Math.toRadians(angular));
-        objectiveY = droneY - distance*Math.cos(Math.toRadians(angular));
-        System.out.println(objectiveX + "," + objectiveY);
-        objectiveLocated = true;
-    }
-    
-    public String findingObjective(){
-        // Obtenemos inicialmente las coordenadas del objetivo
-        if (!objectiveLocated || !miniObjective)
-            locateObjective();
-        
-        // Determinamos acción a realizar
-        this.obtainActionsCost();
-        int angle = this.getNextStepAngle();
-        nextStepHeight = Integer.MIN_VALUE;
-        
-        
-        int dif = (int) (compass - angle);
-        String action = "";
-        
+    /**
+     * Evalúa la necesidad de establecer un mini objetivo, en caso de ser necesario, se establecen las coordenadas de éste
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
+    public void evaluatePossibleMiniObjective(){
+        int offset = 3; // Distancia frente al dron en la que se establecerá el posible objetivo
+        int nextHeight ; // Altura de la siguiente casilla
 
-        //Offset se tiene que adecuar por si hubiera un fin de mapa
-        int offset = 3;
-        int nextHeight = 0; 
-        //borderingMode = true;
-
+        // Valoramos si es necesario establecer un mini objetivo, dependiendo de nuestra orientación
         switch(compass){
             case 0: 
                 nextHeight = visualMatrix[2][3];
@@ -217,26 +196,42 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                     objectiveY = droneY - offset ;
                 }
             break;
-
         }
+    }
+    
+    /**
+     * Determina el objetivo al que el dron debe dirigirse y toma la mejor acción posible para aproximarse a él
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @return action Acción a realizar
+     */
+    public String findingObjective(){
+        // Obtenemos inicialmente las coordenadas del objetivo
+        if (!objectiveLocated)
+            locateObjective();
         
-        if (nextHeight >= maxHeight){
-            miniObjective = true;
-        }
-            
-            
+        // Determinamos la distancia euclídea con respecto al objetivo de las casillas que nos rodean
+        obtainActionsCost();
+        
+        nextStepHeight = Integer.MIN_VALUE;
+        
+        String action = "";
+        
+        // Evaluamos el posible mini objetivo
+        evaluatePossibleMiniObjective();
+        
+        // Calculamos el ángulo que ha de girar el dron para orientarse hacia la casilla adyacente que presento una menor distancia euclídea con respecto al objetivo
+        int angle = getNextStepAngle();
+        int dif = (int) (compass - angle);
+        
         timer--;
         if (timer <= 0){
             locateObjective();
             timer = 210;
         }
-            
-        System.out.println("Objetivo actual -> (" + objectiveX + "," + objectiveY + ")");
         
         // Si evalúo giro a la derecha
         if (dif == 0){
             action = "moveF";
-            System.out.println(angle);
             if (compass - 0 < 0.1 && compass - 0 > -0.1)
                 nextStepHeight = visualMatrix[2][3];
             else if (compass - 45 < 0.1 && compass - 45 > -0.1)
@@ -254,12 +249,10 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             else if (compass - (-45) < 0.1 && compass - (-45) > -0.1)
                 nextStepHeight = visualMatrix[2][2];
             
-            System.out.println("Altura dron Z : " + droneZ + "/ Siguiente posición en Z : " + nextStepHeight + "\n Distancia al objetivo : " + distance);
             if (nextStepHeight > droneZ)
                 action = "moveUP";
         }
         else if (dif < 0){
-            System.out.println("Evalúo girar a la derecha con D=" + dif);
             if (Math.abs(dif) > 180) // No es conveniente girar a la derecha
                 action = "rotateL";
             else
@@ -267,7 +260,6 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
         // Evalúo giro a la izquierda
         else{
-            System.out.println("Evalúo girar a la izquierda con D=" + dif);
             if (Math.abs(dif) > 180) // No es conveniente girar a la izquierda
                 action = "rotateR";
             else
@@ -278,7 +270,6 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return action;
     }
     
-    
     public int getNextStepAngle(){
         int angle = 0;
         
@@ -288,16 +279,24 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         
         while(it.hasNext()){
             Map.Entry pair = (Map.Entry) it.next();
-            System.out.println(pair.getValue()+" "+pair.getKey());
+            
             if ((double) pair.getValue() < minDist){
                 minDist = (double) pair.getValue();
                 angle = (int) pair.getKey();
             }
         }
-        System.out.println("Cojo el iterador con ángulo " + angle + " y dist. " + minDist);
         return angle;
     }
     
+    /**
+     * Calcula, en base a la posición actual del dron, al ángulo que devuelve el sensor angular y a la distancia que devuelve el sensor distance; la posición en X e Y del objetivo
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
+    public void locateObjective(){
+        objectiveX = (int) Math.round(droneX + distance*Math.sin(Math.toRadians(angular)));
+        objectiveY = (int) Math.round(droneY - distance*Math.cos(Math.toRadians(angular)));
+        objectiveLocated = true;
+    }
     
     public void obtainActionsCost(){
         if (visualMatrix[2][3] < -maxHeight || visualMatrix[2][3] >= maxHeight || locationsMemory.contains(new Point(droneX, droneY-1))){
@@ -345,45 +344,44 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     public void decide(){
         String action = "";
         
-        if(!borderingMode){
-            /*Modo de búsqueda de Objective*/
-            action = findingObjective();
-        }
-        else{
-            /*Modo Bordeo*/
-            action = borderingObstacle();
-        }
+        // Modo de búsqueda de Objective
+        action = findingObjective();
         
-        
-        // Estimación de la energía
-        System.out.println("Energía restante : " + energy);
-        if (action == "moveF"){
-            
-            /*if ((droneZ - nextStepHeight + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){*/
-            if(Math.floor((droneZ - nextStepHeight)/5.0)*(sensorsEnergyWaste+5) + ((droneZ - nextStepHeight)%5.0) + sensorsEnergyWaste + 5 >= energy){
-                if (droneZ - visualMatrix[3][3] >= 5)
-                    action = "moveD";
-                else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
-                    action = "touchD";
-                else
-                    action = "recharge";
-            }
-        }
-        else{
-            /*if ((droneZ - visualMatrix[3][3] + 5)*(sensorsEnergyWaste/5.0+1/5.0) >= (energy + sensorsEnergyWaste*6+6)){*/
-            if(Math.floor((droneZ - visualMatrix[3][3])/5.0)*(sensorsEnergyWaste+5) + ((droneZ - visualMatrix[3][3])%5.0) + sensorsEnergyWaste + 5 >= energy){
-                if (droneZ - visualMatrix[3][3] >= 5)
-                    action = "moveD";
-                else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
-                    action = "touchD";
-                else
-                    action = "recharge";
-            }
-        }
-        
-        
+        // Evaluamos si tenemos que recargar y actualizamos la acción consecuentemente
+        action = evaluateRecharge(action);
+         
         // Si hemos alcanzado el objetivo, descendemos
-        if (distance == 0){
+        action = evaluateObjective(action);
+        
+        // Actualizamos la energía
+        updateEnergy(action);
+        
+        if (action.equals("rescue")){
+            Info("Rescatando al objetivo");
+        }
+        
+        // Manejamos la memoria del dron
+        updateMemory();
+        
+        // Enviamos el mensaje con la acción
+        sendAction(action);
+       
+        // Esperando respuesta
+        JsonObject parsedResult = receiveAnswerToAction();
+        
+        // En función de la respuesta del servidor, actualizamos el estado del agente
+        if (parsedResult.get("result").asString().equals("ok") && !(status.equals("logout"))){
+            status = "idle";
+        }
+        else{
+            status = "logout";
+        }
+    }
+    
+    public String evaluateObjective (String act){
+        String action = act;
+        
+        if (distance == 0){ // Objective = Ludwig
             if (droneZ - visualMatrix[3][3] >= 5)
                 action = "moveD";
             else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
@@ -395,62 +393,39 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 status = "logout";
             }
         }
-        else if (droneX == Math.round(objectiveX) && droneY == Math.round(objectiveY)){
+        else if (droneX == objectiveX && droneY == objectiveY){ // Objective = Mini Objective
             this.locateObjective();
             action = "rotateR";
         }
         
+        return action;
+    }
+    
+    public String evaluateRecharge (String act){
+        String action = act;
         
-        // Actualizamos la energía
-        if (action == "moveF" || action == "rotateR" || action == "rotateL" || action == "touchD"){
-            energy--;
-        }
-        else if (action == "recharge"){
-            energy=1000;
-        }
-        else{
-            energy-=5;
-        }
-        
-        if (action.equals("rescue")){
-            Info("Rescatando al objetivo");
-        }
-        
-        /*Manejamos la memoria del dron*/
-        Point currentPos = new Point(droneX,droneY);
-        
-        if(!locationsMemory.contains(currentPos)){
-            locationsMemory.add(currentPos);
-        }
-        
-        if (locationsMemory.size() >= MAX_MEMORY_SIZE){
-            locationsMemory.remove();
-        }
-        
-        System.out.println("Tamaño de cola de memoria = " + locationsMemory.size());
-        for (Point p : locationsMemory){
-            System.out.print("(" + p.getX() + "," + p.getY() + ")\t");
-        }
-        System.out.println("\n________\n\n");
-        
-        JsonObject actionToSend = getActions(action);
-        worldSender = worldReceiver.createReply();
-        worldSender.setContent(actionToSend.toString());
-        this.sendServer(worldSender);
-        
-        worldReceiver = this.blockingReceive();
-        String result = worldReceiver.getContent();
-       
-        // Esperando respuesta
-        JsonObject parsedResult;
-        parsedResult = Json.parse(result).asObject();
-        
-        if (parsedResult.get("result").asString().equals("ok") && !(status.equals("logout"))){
-            status = "idle";
+        if (action == "moveF"){
+            if(Math.floor((droneZ - nextStepHeight)/5.0)*(sensorsEnergyWaste+5) + ((droneZ - nextStepHeight)%5.0) + sensorsEnergyWaste + 5 >= energy){
+                if (droneZ - visualMatrix[3][3] >= 5)
+                    action = "moveD";
+                else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
+                    action = "touchD";
+                else
+                    action = "recharge";
+            }
         }
         else{
-            status = "logout";
+            if(Math.floor((droneZ - visualMatrix[3][3])/5.0)*(sensorsEnergyWaste+5) + ((droneZ - visualMatrix[3][3])%5.0) + sensorsEnergyWaste + 5 >= energy){
+                if (droneZ - visualMatrix[3][3] >= 5)
+                    action = "moveD";
+                else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
+                    action = "touchD";
+                else
+                    action = "recharge";
+            }
         }
+        
+        return action;
     }
     
     public JsonObject getActions (String action){
@@ -479,7 +454,6 @@ public class CieAutomotiveDrone extends IntegratedAgent{
     } 
     
     public double getDistanceToObjective(int posX, int posY){
-        System.out.println(posX + " " + posY + " " +Math.sqrt(Math.pow(objectiveX-posX,2) + Math.pow(objectiveY-posY,2)));
         return Math.sqrt(Math.pow(objectiveX-posX,2) + Math.pow(objectiveY-posY,2));
     }
     
@@ -524,7 +498,6 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             width = parsedLogin.get("width").asInt();
             height = parsedLogin.get("height").asInt();
             maxHeight = parsedLogin.get("maxflight").asInt();
-            System.out.println("Altura máxima : " + maxHeight + "\n\n");
         }
         else{
             status = "exit";
@@ -568,21 +541,56 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 } 
             }
             
-            /*
-            System.out.println("\n" + angular + "\n" + compass + "\n" + distance + "\n" + droneX + "\n" + droneY + "\n" + droneZ + "\n\n");
-            for (int i=0; i < 7 ; i++){
-                for (int j=0 ; j < 7 ; j++){
-                     System.out.print(visualMatrix[i][j] + "\t");
-                } 
-                System.out.print("\n");
-            }
-            */
             energy -= sensorsEnergyWaste;
             
             status = "decide";
         }
         else{
             status = "logout";
+        }
+    }
+    
+    public JsonObject receiveAnswerToAction (){
+        worldReceiver = this.blockingReceive();
+        String result = worldReceiver.getContent();
+        JsonObject parsedResult;
+        parsedResult = Json.parse(result).asObject();
+        
+        return parsedResult;
+    }
+    
+    public void sendAction (String act){
+        String action = act;
+        
+        JsonObject actionToSend = getActions(action);
+        worldSender = worldReceiver.createReply();
+        worldSender.setContent(actionToSend.toString());
+        this.sendServer(worldSender);
+    }
+    
+    public void updateEnergy (String act){
+        String action = act;
+        
+        if (action == "moveF" || action == "rotateR" || action == "rotateL" || action == "touchD"){
+            energy--;
+        }
+        else if (action == "recharge"){
+            energy=1000;
+        }
+        else{
+            energy-=5;
+        }
+    }
+    
+    public void updateMemory (){
+        Point currentPos = new Point(droneX,droneY);
+        
+        if(!locationsMemory.contains(currentPos)){
+            locationsMemory.add(currentPos);
+        }
+        
+        if (locationsMemory.size() >= MAX_MEMORY_SIZE){
+            locationsMemory.remove();
         }
     }
 }
