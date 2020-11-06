@@ -221,16 +221,17 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         
         // Calculamos el ángulo que ha de girar el dron para orientarse hacia la casilla adyacente que presento una menor distancia euclídea con respecto al objetivo
         int angle = getNextStepAngle();
+        // Calculamos la diferencia entre compass y el ángulo que el dron tiene que girar para orientarse a la siguiente mejor casilla según la heurística
         int dif = (int) (compass - angle);
         
+        // Actualizamos el timer
         timer--;
-        if (timer <= 0){
+        if (timer <= 0){ // Si el timer llega a 0, lo reseteamos y volvemos a recalcular el objetivo (dirigiéndolo a Ludwig)
             locateObjective();
             timer = 210;
         }
         
-        // Si evalúo giro a la derecha
-        if (dif == 0){
+        if (dif == 0){ // Si el dron está orientado hacia el objetivo
             action = "moveF";
             if (compass - 0 < 0.1 && compass - 0 > -0.1)
                 nextStepHeight = visualMatrix[2][3];
@@ -252,24 +253,27 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             if (nextStepHeight > droneZ)
                 action = "moveUP";
         }
-        else if (dif < 0){
+        else if (dif < 0){ // En caso contrario, si la diferencia es negativa, probamos a evaluar un giro hacia la derecha para orientar al dron hacia el objetivo
             if (Math.abs(dif) > 180) // No es conveniente girar a la derecha
                 action = "rotateL";
             else
                 action = "rotateR";
         }
-        // Evalúo giro a la izquierda
-        else{
+        else{ // Si la diferencia es positiva, probamos a evaluar un giro hacia la izquierda para orientar al dron hacia el objetivo
             if (Math.abs(dif) > 180) // No es conveniente girar a la izquierda
                 action = "rotateR";
             else
                 action = "rotateL";
         }
         
-        
         return action;
     }
     
+    /**
+     * Obtiene el ángulo que el dron tiene que girar para orientarse a la siguiente mejor casilla según la heurística
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @return angle El ángulo que el dron tiene que girar para orientarse a la siguiente mejor casilla según la heurística
+     */
     public int getNextStepAngle(){
         int angle = 0;
         
@@ -277,7 +281,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         
         double minDist = Double.MAX_VALUE;
         
-        while(it.hasNext()){
+        while(it.hasNext()){ // Recorremos la matriz de costes en busca del ángulo más óptimo
             Map.Entry pair = (Map.Entry) it.next();
             
             if ((double) pair.getValue() < minDist){
@@ -285,6 +289,8 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 angle = (int) pair.getKey();
             }
         }
+        
+        // El ángulo devuelto será el que nos lleve a la con menor distancia euclídea con respecto al objetivo
         return angle;
     }
     
@@ -298,6 +304,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         objectiveLocated = true;
     }
     
+    
+    /**
+     * Inicializa la matriz de costes con todos los valores de las casillas que rodean al dron. El coste es inversamente proporcional a la distancia euclídea con respecto al objetivo actual. 
+     * Si la posición está contenida en la memoria del dron, se le adjudica un valor infinito
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void obtainActionsCost(){
         if (visualMatrix[2][3] < -maxHeight || visualMatrix[2][3] >= maxHeight || locationsMemory.contains(new Point(droneX, droneY-1))){
             actionsCost.put(0, Double.MAX_VALUE);
@@ -340,7 +352,10 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         else actionsCost.put(-45, this.getDistanceToObjective(droneX-1, droneY-1));
     }
     
-    
+    /**
+     * Método principal de la clase, elige la acción que se va a realizar
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void decide(){
         String action = "";
         
@@ -378,6 +393,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
     }
     
+    /**
+     * Evalúa si el dron se encuentra sobre el objetivo y, en caso afirmativo, determina la acción a realizar para llevar a cabo su rescate si es el objetivvo principal
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @param act Acción determinada a realizar justo antes de llamar a este método
+     * @return action Acción elegida por el método
+     */
     public String evaluateObjective (String act){
         String action = act;
         
@@ -392,7 +413,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
                 action = "rescue";
                 status = "logout";
             }
-        }
+        } 
         else if (droneX == objectiveX && droneY == objectiveY){ // Objective = Mini Objective
             this.locateObjective();
             action = "rotateR";
@@ -401,11 +422,18 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return action;
     }
     
+    /**
+     * Evalúa si va a ser necesaria la recarga en la presente iteración en función del coste de energía actual o de la siguiente casilla a la que se moverá el dron.
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @param act Acción determinada a realizar justo antes de llamar a este método
+     * @return action Acción elegida por el método
+     */
     public String evaluateRecharge (String act){
         String action = act;
         
-        if (action == "moveF"){
-            if(Math.floor((droneZ - nextStepHeight)/5.0)*(sensorsEnergyWaste+5) + ((droneZ - nextStepHeight)%5.0) + sensorsEnergyWaste + 5 >= energy){
+        if (action == "moveF"){ 
+            // Se evalúa si se ha de recargar antes de avanzar a la siguiente casilla
+            if(Math.floor((droneZ - nextStepHeight)/5.0)*(sensorsEnergyWaste+5) + ((droneZ - nextStepHeight)%5.0) + sensorsEnergyWaste + 5 >= energy){ 
                 if (droneZ - visualMatrix[3][3] >= 5)
                     action = "moveD";
                 else if ((droneZ - visualMatrix[3][3]) < 5 && (droneZ - visualMatrix[3][3]) > 0)
@@ -415,6 +443,7 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             }
         }
         else{
+            // Se evalúa si se ha de recargar de inmediato
             if(Math.floor((droneZ - visualMatrix[3][3])/5.0)*(sensorsEnergyWaste+5) + ((droneZ - visualMatrix[3][3])%5.0) + sensorsEnergyWaste + 5 >= energy){
                 if (droneZ - visualMatrix[3][3] >= 5)
                     action = "moveD";
@@ -428,6 +457,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return action;
     }
     
+    /**
+     * Codifica la acción para enviarla al servidor
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @param action Acción a enviar en formato String
+     * @return actions Acción a realizar en formato JsonObject
+     */
     public JsonObject getActions (String action){
         JsonObject actions = new JsonObject();
         
@@ -438,6 +473,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return actions;
     }
     
+    /**
+     * Codifica la información del login para enviarla al servidor
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @return loginInfo Información de login en formato JsonObject
+     */
     public JsonObject getDeploymentMessage (){
         JsonObject loginInfo = new JsonObject();
         JsonArray sensors = new JsonArray();
@@ -453,10 +493,22 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return loginInfo;
     } 
     
+    /**
+     * Devuelve la distancia euclídea del punto cardinal introducido por parámetros con respecto al objetivo
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @param posX Coordenada X del punto cardinal a evaluar
+     * @param posY Coordenada Y del punto cardinal a evaluar
+     * @return Distancia euclídea del punto cardinal introducido por parámetros con respecto al objetivo
+     */
     public double getDistanceToObjective(int posX, int posY){
         return Math.sqrt(Math.pow(objectiveX-posX,2) + Math.pow(objectiveY-posY,2));
     }
     
+    /**
+     * Codifica la información de logout para enviarla al servidor
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @return logoutInfo La información de logout codificada en formato JsonObject
+     */
     public JsonObject getLogout (){
         JsonObject logoutInfo = new JsonObject();
         
@@ -466,6 +518,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return logoutInfo;
     }
     
+    /**
+     * Codifica el mensaje de petición de los datos de los sensores que será enviado al servidor
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @return sensorsInfo Mensaje codificado de petición de los datos de los sensores en formato JsonObject
+     */
     public JsonObject getSensors (){
         JsonObject sensorsInfo = new JsonObject();
         
@@ -475,10 +532,18 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return sensorsInfo;
     }
     
+    /**
+     * Método de transición que activa la lectura de sensores. Su existencia tiene como objetivo mantener la coherencia con la representación teórica del agente
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void idle(){
         status = "readSensors";
     }
     
+    /**
+     * Se encarga de iniciar la sesión en el sistema y procesar la respuesta que éste envíe
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void login(){
         JsonObject loginInfo = getDeploymentMessage();
         
@@ -504,8 +569,12 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
     }
     
+    /**
+     * Se encarga de solicitar el cierre de sesión del agente en el sistema
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void logout(){
-        this.readSensors();
+        this.readSensors(); // Leemos una última vez los sensores para saber el estado final del agente en el mundo antes de su desconexión
         JsonObject logoutInfo = getLogout();
         worldSender.setContent(logoutInfo.toString());
         this.sendServer(worldSender);
@@ -513,6 +582,10 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         status = "exit";
     }
     
+    /**
+     * Método encargado de crear y enviar la solicitud de la información obtenida por los sensores al servidor
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void readSensors(){
         JsonObject sensorsRequest = getSensors();
         worldSender.setContent(sensorsRequest.toString());
@@ -550,6 +623,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         }
     }
     
+    /**
+     * Recibe la respuesta al envío de una acción al servidor
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @return parsedResult Respuesta al envío de la acción al servidor codificada en formato JsonObject
+     */
     public JsonObject receiveAnswerToAction (){
         worldReceiver = this.blockingReceive();
         String result = worldReceiver.getContent();
@@ -559,6 +637,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         return parsedResult;
     }
     
+    /**
+     * Envía al servidor la acción elegida para realizar en formato JsonObject
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @param act Acción elegida para realizar en formato String
+     */
     public void sendAction (String act){
         String action = act;
         
@@ -568,6 +651,11 @@ public class CieAutomotiveDrone extends IntegratedAgent{
         this.sendServer(worldSender);
     }
     
+    /**
+     * Actualiza la energía con respecto a la acción realizada
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     * @param act Acción elegida para realizar hasta el momento
+     */
     public void updateEnergy (String act){
         String action = act;
         
@@ -575,13 +663,17 @@ public class CieAutomotiveDrone extends IntegratedAgent{
             energy--;
         }
         else if (action == "recharge"){
-            energy=1000;
+            energy = 1000;
         }
         else{
-            energy-=5;
+            energy -= 5;
         }
     }
     
+    /**
+     * Actualiza la memoria del dron, añadiendo la posición actual si no la contiene y eliminando la posición más desactualizada si la memoria está llena
+     * @author Noelia Escalera Mejías, Fº Javier Casado de Amezúa García, Jesús Torres Sánchez, Iván Valero Rodríguez
+     */
     public void updateMemory (){
         Point currentPos = new Point(droneX,droneY);
         
