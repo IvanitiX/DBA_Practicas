@@ -27,8 +27,11 @@ public class CieDroneHQ extends IntegratedAgent{
     private YellowPages pags;
     private String worldManager;
     private String convID;
-    private int mapWidth, mapHeight;
-    private int map[][];
+    private int mapWidth, mapHeight, mapSize;
+    //private int map[][];
+    private int map[];
+    private String marketplaces[];
+    private String catalogues[];
     private int ncoins;
     private String coins[]; 
     private ArrayList wallsList;
@@ -89,12 +92,15 @@ public class CieDroneHQ extends IntegratedAgent{
     }
     
     public void login(){
+        System.out.println("Login del agente " + this.getAID().getLocalName());
         
         // Esperamos inicialmente el mensaje de CieListener con el mapa y el id de la conversación
-        MessageTemplate template = MessageTemplate.and(MessageTemplate.MatchConversationId("INITIAL_INFO"), 
+        MessageTemplate template = MessageTemplate.and(MessageTemplate.MatchProtocol("INITIALIZE"), 
                 MessageTemplate.MatchSender(new AID("CieListener", AID.ISLOCALNAME)));
         
-        listenerReceiver = this.blockingReceive();
+        listenerReceiver = this.blockingReceive(template);
+        
+        System.out.println("Agente " + this.getAID().getLocalName() + " ha recibido el mensaje del listener");
         
         String initialInfo = listenerReceiver.getContent();
         JsonObject parsedInitialInfo = Json.parse(initialInfo).asObject();
@@ -102,17 +108,21 @@ public class CieDroneHQ extends IntegratedAgent{
         convID = parsedInitialInfo.get("convID").asString();
         
         // Calculamos dimensiones del mapa 
-        mapWidth = parsedInitialInfo.get("map").asArray().size();
-        mapHeight = parsedInitialInfo.get("map").asArray().get(0).asArray().size();
-
-        map = new int[mapWidth][mapHeight];
+        //mapWidth = parsedInitialInfo.get("map").asArray().size();
+        //mapHeight = parsedInitialInfo.get("map").asArray().get(0).asArray().size();
+        mapSize = parsedInitialInfo.get("map").asArray().size();
+        //map = new int[mapWidth][mapHeight];
 
         // Obtenemos información del mapa
-        for (int i=0; i<mapWidth; i++){
+        /*for (int i=0; i<mapWidth; i++){
             for (int j=0; j<mapHeight; j++){
                 map[i][j] = parsedInitialInfo.get("map").asArray().get(i).asArray().get(j).asInt();
             }
-        }
+        }*/
+        /*for (int i=0; i<mapSize; i++){
+            map[i] = parsedInitialInfo.get("map").asArray().get(i).asInt();
+        }*/
+        System.out.println("Mapa: " + parsedInitialInfo.get("map").asArray());
         
         // ***** IDENTITY MANAGER *****
         
@@ -142,6 +152,9 @@ public class CieDroneHQ extends IntegratedAgent{
             return;
         }
         
+        
+        System.out.println("Agente " + this.getAID().getLocalName() + " suscrito a IM");
+        
         // Creamos respesta al IM para obtener páginas amarillas
         ACLMessage getYP = identityManagerReceiver.createReply();
         getYP.setPerformative(ACLMessage.QUERY_REF);
@@ -163,6 +176,7 @@ public class CieDroneHQ extends IntegratedAgent{
             return;
         }
         
+       
         // Actualizamos páginas amarillas a partir de la respuesta del IM
         pags.updateYellowPages(identityManagerReceiver) ;
         System.out.println(pags.prettyPrint());
@@ -180,6 +194,7 @@ public class CieDroneHQ extends IntegratedAgent{
         //worldManagerSender.setEncoding(_myCardID.getCardID());
         String content = this.getDeploymentMessage().toString();
         worldManagerSender.setContent(content);
+        this.send(worldManagerSender);
         
         worldManagerReceiver = this.blockingReceive();
         
@@ -191,6 +206,7 @@ public class CieDroneHQ extends IntegratedAgent{
         }
         
         String loginInfo = worldManagerReceiver.getContent();
+        System.out.println("Agente " + this.getAID().getLocalName() + " ha obtenido respuesta del WM: " + loginInfo);
        
         // Esperando respuesta
         JsonObject parsedLoginInfo;
@@ -206,7 +222,7 @@ public class CieDroneHQ extends IntegratedAgent{
                 coins[i] = parsedLoginInfo.get("coins").asArray().get(i).asString();
             }
             
-            status = "logout";
+            status = "market";
         }
         else{
             status = "logout";
@@ -215,22 +231,67 @@ public class CieDroneHQ extends IntegratedAgent{
     
     
     private void logout(){
-        // FALTA INFORMAR AL LISTENER PARA QUE CANCELE LA SUSCRIPCIÓN
-        
-        
         // Cancelamos suscripción a Identity Manager
         identityManagerSender = identityManagerReceiver.createReply();
         identityManagerSender.setPerformative(ACLMessage.CANCEL);
         identityManagerSender.setContent("");
         this.send(identityManagerSender);
         
+        // Informamos al listener para que cancele la suscripción
+        listenerSender.addReceiver(new AID("CieListener", AID.ISLOCALNAME));
+        listenerSender.setPerformative(ACLMessage.INFORM);
+        listenerSender.setContent("loggingOut");
+        this.send(listenerSender);
+        
         status = "exit";
     }
     
     private void market(){
-    
-        // FALTAN TODAS LAS OPERACIONES DE MARKET
-        // Duda: de dónde extraer el nombre de los marketplaces...
+        // Obtenemos los nombres de los marketplaces con los que queremos comunicarnos
+        marketplaces = new String[pags.queryProvidersofService("shop@"+convID).toArray().length];
+        
+        for (int i=0; i<marketplaces.length; i++){
+            marketplaces[i] = (String) pags.queryProvidersofService("shop@"+convID).toArray()[i];
+        }
+        
+        /*
+        // Enviamos una solicitud a todos los marketplaces para obtener su catálogo
+        
+        marketplaceSender.setSender(this.getAID());
+        marketplaceSender.setPerformative(ACLMessage.QUERY_REF);
+        marketplaceSender.setConversationId(convID);
+        marketplaceSender.setReplyWith("CIE_CATALOGUE");
+        marketplaceSender.setProtocol("REGULAR");
+        marketplaceSender.setContent("");
+        for (int i=0; i<marketplaces.length; i++){
+            marketplaceSender.addReceiver(new AID (marketplaces[i], AID.ISLOCALNAME));
+        }
+        this.send(marketplaceSender);
+        
+        // Recibimos respuesta de cada marketplace
+        
+        MessageTemplate template;
+        catalogues = new String[marketplaces.length];
+        
+        for (int i=0; i<marketplaces.length; i++){
+            template = MessageTemplate.and(MessageTemplate.MatchInReplyTo("CIE_CATALOGUE"), 
+                MessageTemplate.MatchSender(new AID(marketplaces[0], AID.ISLOCALNAME)));
+            
+            marketplaceReceiver = this.blockingReceive(template);
+            
+            if (marketplaceReceiver.getPerformative() != ACLMessage.INFORM){
+                Info ("Fallo al obtener el catálogo de " + marketplaces[i]);
+            }
+            else{
+                catalogues[i] = Json.parse(marketplaceReceiver.getContent()).asObject().get("details").asString();
+            }
+        }
+        
+        // Falta buscar dentro de cada catálogo el contenido que más nos interesa
+        // y realizar una solicitud al mismo
+        // Nota: si todos los catálogos están vacíos, nos deslogueamos del sistema (status=logout)
+        
+        */
         
         status = "logout";
     }

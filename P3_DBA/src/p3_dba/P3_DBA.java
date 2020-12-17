@@ -13,7 +13,11 @@ public class P3_DBA {
         ConsoleBoot app = new ConsoleBoot("P3", args);
         app.selectConnection();
         
-        app.launchAgent("45925763F-Listener", CieListener.class);
+        app.launchAgent("CieListener", CieListener.class);
+        app.launchAgent("CieDroneHQ1", CieDroneHQ.class);
+        app.launchAgent("CieDroneHQ2", CieDroneHQ.class);
+        app.launchAgent("CieDroneHQ3", CieDroneHQ.class);
+        //app.launchAgent("CieDroneDLX", CieDroneDLX.class);
         
         app.shutDown();        
     }

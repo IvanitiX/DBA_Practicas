@@ -28,8 +28,9 @@ public class CieListener extends IntegratedAgent{
     private String worldManager;
     private String worldName;
     private String convID;
-    private int mapWidth, mapHeight;
-    private int map[][];
+    private int mapWidth, mapHeight, mapSize;
+    //private int map[][];
+    private int map[];
     private ArrayList wallsList;
     private JsonValue mapJsonFormat;
     private ACLMessage identityManagerSender, identityManagerReceiver;
@@ -90,30 +91,9 @@ public class CieListener extends IntegratedAgent{
         // Enviamos la lista de paredes a los drones
         String content = this.getWallsListMessage().toString();
         allRescuersSender.setContent(content);
+        allRescuersSender.setProtocol("REGULAR");
         
         this.send(allRescuersSender);
-        
-        // La última tarea a realizar consiste en esperar de forma bloqueante
-        // una confirmación de desbloqueo de todos los drones
-        MessageTemplate template1 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
-                MessageTemplate.MatchSender(new AID("CieDroneHQ1", AID.ISLOCALNAME)));
-        
-        allRescuersReceiver = this.blockingReceive(template1);
-        
-        MessageTemplate template2 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
-                MessageTemplate.MatchSender(new AID("CieDroneHQ2", AID.ISLOCALNAME)));
-        
-        allRescuersReceiver = this.blockingReceive(template2);
-        
-        MessageTemplate template3 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
-                MessageTemplate.MatchSender(new AID("CieDroneHQ3", AID.ISLOCALNAME)));
-        
-        allRescuersReceiver = this.blockingReceive(template3);
-        
-        MessageTemplate template4 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
-                MessageTemplate.MatchSender(new AID("CieDroneDLX", AID.ISLOCALNAME)));
-        
-        allRescuersReceiver = this.blockingReceive(template4);
         
         status = "logoutWM";
     }
@@ -149,6 +129,7 @@ public class CieListener extends IntegratedAgent{
     }
     
     public void login(){
+        System.out.println("Login del agente " + this.getAID().getLocalName());
         // ***** IDENTITY MANAGER *****
         
         // Suscripción a Identity Manager
@@ -214,6 +195,7 @@ public class CieListener extends IntegratedAgent{
         //worldManagerSender.setEncoding(_myCardID.getCardID());
         String content = this.getDeploymentMessage().toString();
         worldManagerSender.setContent(content);
+        this.send(worldManagerSender);
         
         worldManagerReceiver = this.blockingReceive();
         
@@ -223,6 +205,7 @@ public class CieListener extends IntegratedAgent{
             status = "logoutIM";
             return;
         }
+        System.out.println("Listener logueado con éxito en WM!");
         
         String loginInfo = worldManagerReceiver.getContent();
        
@@ -233,21 +216,31 @@ public class CieListener extends IntegratedAgent{
         if (parsedLoginInfo.get("result").asString().equals("ok")){
             
             // Inicializamos matriz del mapa
-            mapJsonFormat = parsedLoginInfo.get("map");
-            mapWidth = mapJsonFormat.asArray().size();
-            mapHeight = mapJsonFormat.asArray().get(0).asArray().size();
+            mapJsonFormat = parsedLoginInfo.get("map").asObject().get("filedata");
             
-            map = new int[mapWidth][mapHeight];
+            // AÑADIR: obtención y generación del mapa como en los tutoriales
+            // PROBLEMA: el mapa se devuelve como un array, no como una matriz
+            //mapWidth = mapJsonFormat.asArray().size();
+            //mapHeight = mapJsonFormat.asArray().get(0).asArray().size();
+            mapSize = mapJsonFormat.asArray().size();
+            
+            map = new int[mapSize];
             
             // Obtenemos información del mapa
+            /*
             for (int i=0; i<mapWidth; i++){
                 for (int j=0; j<mapHeight; j++){
                     map[i][j] = mapJsonFormat.asArray().get(i).asArray().get(j).asInt();
                 }
+            }*/
+            
+            for (int i=0; i<mapWidth; i++){
+                map[i] = mapJsonFormat.asArray().get(i).asInt();
             }
             convID = worldManagerReceiver.getConversationId();
             
             status = "sendInitialInfo";
+            //status = "logoutWM";
         }
         else{
             status = "logoutIM";
@@ -267,6 +260,33 @@ public class CieListener extends IntegratedAgent{
     }
     
     private void logoutWM(){
+        // Antes de desloguearse, debe esperar de forma bloqueante una 
+        //confirmación de desbloqueo de todos los drones
+        MessageTemplate template1 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
+                MessageTemplate.MatchSender(new AID("CieDroneHQ1", AID.ISLOCALNAME)));
+        
+        allRescuersReceiver = this.blockingReceive(template1);
+        
+        System.out.println("Listener ha recibido mensaje de CieDroneHQ1");
+        
+        MessageTemplate template2 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
+                MessageTemplate.MatchSender(new AID("CieDroneHQ2", AID.ISLOCALNAME)));
+        
+        allRescuersReceiver = this.blockingReceive(template2);
+        
+        System.out.println("Listener ha recibido mensaje de CieDroneHQ2");
+        
+        MessageTemplate template3 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
+                MessageTemplate.MatchSender(new AID("CieDroneHQ3", AID.ISLOCALNAME)));
+        
+        allRescuersReceiver = this.blockingReceive(template3);
+        
+        System.out.println("Listener ha recibido mensaje de CieDroneHQ3");
+        
+        //MessageTemplate template4 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
+        //        MessageTemplate.MatchSender(new AID("CieDroneDLX", AID.ISLOCALNAME)));
+        
+        //allRescuersReceiver = this.blockingReceive(template4);
         
         // Cancelamos suscripción a World Manager
         worldManagerSender = worldManagerReceiver.createReply();
@@ -284,15 +304,17 @@ public class CieListener extends IntegratedAgent{
         allRescuersSender.addReceiver(new AID("CieDroneHQ1", AID.ISLOCALNAME));
         allRescuersSender.addReceiver(new AID("CieDroneHQ2", AID.ISLOCALNAME));
         allRescuersSender.addReceiver(new AID("CieDroneHQ3", AID.ISLOCALNAME));
-        allRescuersSender.addReceiver(new AID("CieDroneDLX", AID.ISLOCALNAME));
+        //allRescuersSender.addReceiver(new AID("CieDroneDLX", AID.ISLOCALNAME));
         allRescuersSender.setPerformative(ACLMessage.INFORM);
-        allRescuersSender.setConversationId("INITIAL_INFO");
+        allRescuersSender.setProtocol("INITIALIZE");
         String content = this.getInitialInfoMessage().toString();
         allRescuersSender.setContent(content);
        
         this.send(allRescuersSender);
         
-        status = "createWallsList";
+        //status = "createWallsList";
+        // [MODIF]
+        status = "logoutWM";
     }
     
 }
