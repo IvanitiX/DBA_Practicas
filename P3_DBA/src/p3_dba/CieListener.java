@@ -7,6 +7,7 @@ package p3_dba;
 
 import IntegratedAgent.IntegratedAgent;
 import LarvaAgent.LarvaAgent;
+import Map2D.Map2DGrayscale;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -28,27 +29,27 @@ public class CieListener extends IntegratedAgent{
     private String worldManager;
     private String worldName;
     private String convID;
-    private int mapWidth, mapHeight, mapSize;
-    //private int map[][];
-    private int map[];
-    private ArrayList wallsList;
-    private JsonValue mapJsonFormat;
+    //private ArrayList wallsList;
+    private Map2DGrayscale map;
+    private JsonObject mapJsonFormat;
     private ACLMessage identityManagerSender, identityManagerReceiver;
     private ACLMessage worldManagerSender, worldManagerReceiver;
-    private ACLMessage allRescuersSender, allRescuersReceiver;
+    private ACLMessage droneSender, droneReceiver;
     
     @Override
     public void setup(){
         super.setup();
         
         worldName = "Playground1";
-        status = "login";
+        status = "deploy";
         
         identityManagerSender = new ACLMessage();
         worldManagerSender = new ACLMessage();
-        allRescuersSender = new ACLMessage();
+        droneSender = new ACLMessage();
         
-        wallsList = new ArrayList<>();
+        map = new Map2DGrayscale();
+        
+        //wallsList = new ArrayList<>();
         
         pags = new YellowPages();
         _exitRequested = false ;
@@ -63,15 +64,15 @@ public class CieListener extends IntegratedAgent{
     @Override
     public void plainExecute() {
         switch(status){
-            case "login":
-                login();
+            case "deploy":
+                deploy();
             break;
             case "sendInitialInfo":
                 sendInitialInfo();
             break;
-            case "createWallsList":
-                createWallsList();
-            break;
+            //case "createWallsList":
+            //    createWallsList();
+            //break;
             case "logoutWM":
                 logoutWM();
             break;
@@ -84,52 +85,7 @@ public class CieListener extends IntegratedAgent{
         }
     } 
     
-    private void createWallsList(){
-        // Creación de la lista de paredes
-        // [MODIF] ....
-        
-        // Enviamos la lista de paredes a los drones
-        String content = this.getWallsListMessage().toString();
-        allRescuersSender.setContent(content);
-        allRescuersSender.setProtocol("REGULAR");
-        
-        this.send(allRescuersSender);
-        
-        status = "logoutWM";
-    }
-    
-    private JsonObject getDeploymentMessage (){
-        JsonObject loginInfo = new JsonObject();
-        
-        loginInfo.add("problem", worldName);
-        
-        return loginInfo;
-    }
-    
-    private JsonObject getInitialInfoMessage(){
-        JsonObject initialInfo = new JsonObject();
-        
-        initialInfo.add("convID", convID);
-        initialInfo.add("map", mapJsonFormat);
-        
-        return initialInfo;
-    }
-    
-    private JsonObject getWallsListMessage(){
-        JsonObject wallsListInfo = new JsonObject();
-        JsonArray wallsListJsonFormat = new JsonArray();
-        
-        for (int i=0; i<wallsList.size(); i++){
-            wallsListJsonFormat.add((int) wallsList.get(i));
-        }
-            
-        wallsListInfo.add("wallsList", wallsListJsonFormat);
-        
-        return wallsListInfo;
-    }
-    
-    public void login(){
-        System.out.println("Login del agente " + this.getAID().getLocalName());
+    public void deploy(){
         // ***** IDENTITY MANAGER *****
         
         // Suscripción a Identity Manager
@@ -138,7 +94,7 @@ public class CieListener extends IntegratedAgent{
         identityManagerSender.setPerformative(ACLMessage.SUBSCRIBE);
         identityManagerSender.setProtocol("ANALYTICS");
         identityManagerSender.setEncoding(_myCardID.getCardID());
-        identityManagerSender.setContent("");
+        identityManagerSender.setContent("{}");
         
         // Creamos template para detectar en el futuro aquellas respuestas que referencien a la clave key
         String key = "L_IM";
@@ -161,7 +117,7 @@ public class CieListener extends IntegratedAgent{
         // Creamos respesta al IM para obtener páginas amarillas
         ACLMessage getYP = identityManagerReceiver.createReply();
         getYP.setPerformative(ACLMessage.QUERY_REF);
-        getYP.setContent("");
+        getYP.setContent("{}");
 
         getYP.setReplyWith(key);
         
@@ -185,7 +141,7 @@ public class CieListener extends IntegratedAgent{
         worldManager = pags.queryProvidersofService("Analytics group Cie Automotive").toArray()[0].toString();
         Info("El World Manager es " + worldManager);
 
-        // ***** WOLRD MANAGER *****
+        // ***** WORLD MANAGER *****
         
         // Suscripción al World Manager
         worldManagerSender.setSender(this.getAID());
@@ -201,59 +157,74 @@ public class CieListener extends IntegratedAgent{
         
         // Si la respuesta es REFUSE o NOT_UNDERSTOOD, hacemos logout en la plataforma
         if(worldManagerReceiver.getPerformative() != ACLMessage.INFORM){
-            
             status = "logoutIM";
             return;
         }
         System.out.println("Listener logueado con éxito en WM!");
         
-        String loginInfo = worldManagerReceiver.getContent();
+        String deployInfo = worldManagerReceiver.getContent();
+        Info(deployInfo);
        
         // Esperando respuesta
-        JsonObject parsedLoginInfo;
-        parsedLoginInfo = Json.parse(loginInfo).asObject();
+        JsonObject parsedDeployInfo;
+        parsedDeployInfo = Json.parse(deployInfo).asObject();
         
-        if (parsedLoginInfo.get("result").asString().equals("ok")){
+        if (parsedDeployInfo.get("result").asString().equals("ok")){
             
             // Inicializamos matriz del mapa
-            mapJsonFormat = parsedLoginInfo.get("map").asObject().get("filedata");
+            mapJsonFormat = parsedDeployInfo.get("map").asObject();
             
-            // AÑADIR: obtención y generación del mapa como en los tutoriales
-            // PROBLEMA: el mapa se devuelve como un array, no como una matriz
-            //mapWidth = mapJsonFormat.asArray().size();
-            //mapHeight = mapJsonFormat.asArray().get(0).asArray().size();
-            mapSize = mapJsonFormat.asArray().size();
-            
-            map = new int[mapSize];
-            
-            // Obtenemos información del mapa
-            /*
-            for (int i=0; i<mapWidth; i++){
-                for (int j=0; j<mapHeight; j++){
-                    map[i][j] = mapJsonFormat.asArray().get(i).asArray().get(j).asInt();
-                }
-            }*/
-            
-            for (int i=0; i<mapWidth; i++){
-                map[i] = mapJsonFormat.asArray().get(i).asInt();
+            // Generamos el mapa
+            if (!map.fromJson(mapJsonFormat)) {
+                System.out.println("Problema al generar el mapa");
+                status = "logoutIM";
+                return;
             }
+            
             convID = worldManagerReceiver.getConversationId();
             
+            ACLMessage awacsSender = new ACLMessage();
+            awacsSender.setSender(this.getAID());
+            awacsSender.addReceiver(new AID("CieAwacs", AID.ISLOCALNAME));
+            awacsSender.setPerformative(ACLMessage.QUERY_IF);
+            awacsSender.setProtocol("ANALYTICS");
+            //worldManagerSender.setEncoding(_myCardID.getCardID());
+            awacsSender.setContent("");
+            awacsSender.setConversationId(convID);
+            this.send(awacsSender);
+            
             status = "sendInitialInfo";
-            //status = "logoutWM";
         }
         else{
             status = "logoutIM";
         }
     }
     
+    private JsonObject getDeploymentMessage (){
+        JsonObject deployInfo = new JsonObject();
+        
+        deployInfo.add("problem", worldName);
+        
+        return deployInfo;
+    }
+    
+    private JsonObject getInitialInfoMessage(int posx, int posy){
+        JsonObject initialInfo = new JsonObject();
+        
+        initialInfo.add("convID", convID);
+        initialInfo.add("map", mapJsonFormat);
+        initialInfo.add("posx", posx);
+        initialInfo.add("posy", posy);
+        
+        return initialInfo;
+    }
     
     private void logoutIM(){
         
         // Cancelamos suscripción a Identity Manager
         identityManagerSender = identityManagerReceiver.createReply();
         identityManagerSender.setPerformative(ACLMessage.CANCEL);
-        identityManagerSender.setContent("");
+        identityManagerSender.setContent("{}");
         this.send(identityManagerSender);
         
         status = "exit";
@@ -265,33 +236,37 @@ public class CieListener extends IntegratedAgent{
         MessageTemplate template1 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
                 MessageTemplate.MatchSender(new AID("CieDroneHQ1", AID.ISLOCALNAME)));
         
-        allRescuersReceiver = this.blockingReceive(template1);
+        droneReceiver = this.blockingReceive(template1);
         
         System.out.println("Listener ha recibido mensaje de CieDroneHQ1");
         
         MessageTemplate template2 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
                 MessageTemplate.MatchSender(new AID("CieDroneHQ2", AID.ISLOCALNAME)));
         
-        allRescuersReceiver = this.blockingReceive(template2);
+        droneReceiver = this.blockingReceive(template2);
         
         System.out.println("Listener ha recibido mensaje de CieDroneHQ2");
         
         MessageTemplate template3 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
                 MessageTemplate.MatchSender(new AID("CieDroneHQ3", AID.ISLOCALNAME)));
         
-        allRescuersReceiver = this.blockingReceive(template3);
+        droneReceiver = this.blockingReceive(template3);
         
         System.out.println("Listener ha recibido mensaje de CieDroneHQ3");
         
-        //MessageTemplate template4 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
-        //        MessageTemplate.MatchSender(new AID("CieDroneDLX", AID.ISLOCALNAME)));
         
-        //allRescuersReceiver = this.blockingReceive(template4);
+        MessageTemplate template4 = MessageTemplate.and(MessageTemplate.MatchContent("loggingOut"),
+                MessageTemplate.MatchSender(new AID("CieDroneDLX", AID.ISLOCALNAME)));
+        
+        droneReceiver = this.blockingReceive(template4);
+        
+        System.out.println("Listener ha recibido mensaje de CieDroneDLX");
+        
         
         // Cancelamos suscripción a World Manager
         worldManagerSender = worldManagerReceiver.createReply();
         worldManagerSender.setPerformative(ACLMessage.CANCEL);
-        worldManagerSender.setContent("");
+        worldManagerSender.setContent("{}");
         this.send(worldManagerSender);
         
         status = "logoutIM";
@@ -299,22 +274,72 @@ public class CieListener extends IntegratedAgent{
     
     private void sendInitialInfo(){
         
-        // Enviamos mapa e id de la conversación a todos los drones
-        allRescuersSender.setSender(this.getAID());
-        allRescuersSender.addReceiver(new AID("CieDroneHQ1", AID.ISLOCALNAME));
-        allRescuersSender.addReceiver(new AID("CieDroneHQ2", AID.ISLOCALNAME));
-        allRescuersSender.addReceiver(new AID("CieDroneHQ3", AID.ISLOCALNAME));
-        //allRescuersSender.addReceiver(new AID("CieDroneDLX", AID.ISLOCALNAME));
-        allRescuersSender.setPerformative(ACLMessage.INFORM);
-        allRescuersSender.setProtocol("INITIALIZE");
-        String content = this.getInitialInfoMessage().toString();
-        allRescuersSender.setContent(content);
-       
-        this.send(allRescuersSender);
+        // Enviamos a cada drone el id de la conversación, el mapa y su posición
+        // inicial en el mundo
+        droneSender.setSender(this.getAID());
+        droneSender.setPerformative(ACLMessage.INFORM);
+        droneSender.setProtocol("INITIALIZE");
         
-        //status = "createWallsList";
-        // [MODIF]
+        // Enviamos info al drone CieDroneHQ1
+        droneSender.addReceiver(new AID("CieDroneHQ1", AID.ISLOCALNAME));
+        String content = this.getInitialInfoMessage(map.getWidth()/4, map.getHeight()/4).toString();
+        droneSender.setContent(content);
+        this.send(droneSender);
+        
+        // Enviamos info al drone CieDroneHQ2
+        droneSender.removeReceiver(new AID("CieDroneHQ1", AID.ISLOCALNAME));
+        droneSender.addReceiver(new AID("CieDroneHQ2", AID.ISLOCALNAME));
+        content = this.getInitialInfoMessage(3*map.getWidth()/4, map.getHeight()/4).toString();
+        droneSender.setContent(content);
+        this.send(droneSender);
+        
+        // Enviamos info al drone CieDroneHQ3
+        droneSender.removeReceiver(new AID("CieDroneHQ2", AID.ISLOCALNAME));
+        droneSender.addReceiver(new AID("CieDroneHQ3", AID.ISLOCALNAME));
+        content = this.getInitialInfoMessage(3*map.getWidth()/4, 3*map.getHeight()/4).toString();
+        droneSender.setContent(content);
+        this.send(droneSender);
+        
+        // Enviamos info al drone CieDroneDLX
+        
+        droneSender.removeReceiver(new AID("CieDroneHQ3", AID.ISLOCALNAME));
+        droneSender.addReceiver(new AID("CieDroneDLX", AID.ISLOCALNAME));
+        content = this.getInitialInfoMessage(map.getWidth()/4, 3*map.getHeight()/4).toString();
+        droneSender.setContent(content);
+        this.send(droneSender);
+        
         status = "logoutWM";
     }
     
+    
+    /*
+    NOTA: Si finalmente usamos el algoritmo Greedy, estos dos métodos no son necesarios
+    
+    private void createWallsList(){
+        // Creación de la lista de paredes
+        // [MODIF] ....
+        
+        // Enviamos la lista de paredes a los drones
+        String content = this.getWallsListMessage().toString();
+        droneSender.setContent(content);
+        droneSender.setProtocol("REGULAR");
+        
+        this.send(droneSender);
+        
+        status = "logoutWM";
+    }
+    */
+    /*
+    private JsonObject getWallsListMessage(){
+        JsonObject wallsListInfo = new JsonObject();
+        JsonArray wallsListJsonFormat = new JsonArray();
+        
+        for (int i=0; i<wallsList.size(); i++){
+            wallsListJsonFormat.add((int) wallsList.get(i));
+        }
+            
+        wallsListInfo.add("wallsList", wallsListJsonFormat);
+        
+        return wallsListInfo;
+    }*/
 }
